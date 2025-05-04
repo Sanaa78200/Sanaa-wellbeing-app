@@ -111,7 +111,7 @@ const Prieres = () => {
         { name: "Maghrib", arabicName: "المغرب", time: "20:15", isNext: false },
         { name: "Isha", arabicName: "العشاء", time: "21:45", isNext: false }
       ]);
-      setHijriDate("15 رمضان 1446 هـ");
+      setHijriDate("15 Ramadan 1446 هـ");
     } finally {
       setIsLoading(false);
     }
