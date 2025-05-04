@@ -31,7 +31,7 @@ const Navbar = () => {
             <Moon className="h-6 w-6 text-islamic-green" />
             <span className="font-bold text-islamic-green text-lg">Sanaa
           </span>
-            <span className="text-islamic-slate text-lg">Bien-être</span>
+            <span className="text-lg text-fuchsia-500">Bien-être</span>
           </Link>
           
           {/* Desktop navigation */}
