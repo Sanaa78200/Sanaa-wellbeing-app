@@ -18,7 +18,7 @@ const PrayerTimesSection = () => {
     const fetchPrayerTimes = async () => {
       setIsLoading(true);
       try {
-        // For demo purposes we'll use Paris coordinates
+        // Pour demo purposes nous utilisons Paris coordinates
         const latitude = 48.8566;
         const longitude = 2.3522;
         const date = new Date();
