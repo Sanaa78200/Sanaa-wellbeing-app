@@ -11,8 +11,8 @@ interface PrayerTime {
   arabicName: string;
   time: any;
   isNext: boolean;
-  timeUntil?: string; // Propriété ajoutée
-  progressPercent?: number; // Propriété ajoutée
+  timeUntil?: string;
+  progressPercent?: number;
 }
 
 const Prieres = () => {

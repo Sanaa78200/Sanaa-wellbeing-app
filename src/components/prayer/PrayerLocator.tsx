@@ -6,7 +6,7 @@ import { MapPin, Navigation } from 'lucide-react';
 import { toast } from "@/components/ui/sonner";
 
 interface PrayerLocatorProps {
-  onLocationChange: (latitude: number, longitude: number, locationName: string) => void;
+  onLocationChange: (location: { lat: number; lng: number; address: string }) => void;
 }
 
 const PrayerLocator = ({ onLocationChange }: PrayerLocatorProps) => {
@@ -47,7 +47,7 @@ const PrayerLocator = ({ onLocationChange }: PrayerLocatorProps) => {
             }
           }
           
-          onLocationChange(latitude, longitude, locationName);
+          onLocationChange({ lat: latitude, lng: longitude, address: locationName });
           toast.success(`Localisation trouvée: ${locationName}`);
         } catch (error) {
           console.error("Erreur lors de la géolocalisation:", error);
@@ -97,7 +97,7 @@ const PrayerLocator = ({ onLocationChange }: PrayerLocatorProps) => {
         const { lat, lon, display_name } = data[0];
         const locationName = display_name.split(',').slice(0, 2).join(',');
         
-        onLocationChange(parseFloat(lat), parseFloat(lon), locationName);
+        onLocationChange({ lat: parseFloat(lat), lng: parseFloat(lon), address: locationName });
         toast.success(`Lieu trouvé: ${locationName}`);
       } else {
         toast.error("Lieu non trouvé. Veuillez essayer un autre nom.");
