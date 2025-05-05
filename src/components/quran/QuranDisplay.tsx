@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 
@@ -50,6 +50,17 @@ const QuranDisplay = ({
   onGoToSurah,
   currentAyah = -1
 }: QuranDisplayProps) => {
+  // Fonction pour corriger le texte arabe si nécessaire
+  useEffect(() => {
+    if (quranData) {
+      const arabicElements = document.querySelectorAll('.arabic-text');
+      arabicElements.forEach(element => {
+        // Cette fonction est vide pour l'instant, mais pourrait être utilisée 
+        // pour appliquer des corrections si nécessaire dans le futur
+      });
+    }
+  }, [quranData]);
+  
   // Afficher les résultats de recherche
   if (searchResults) {
     if (searchResults.count === 0) {
@@ -89,7 +100,7 @@ const QuranDisplay = ({
               currentAyah === index ? 'bg-islamic-cream rounded-md p-2' : ''
             }`}
           >
-            <div className="flex gap-4 items-start">
+            <div className="flex gap-4 items-start ayah-element">
               <span className={`bg-islamic-green text-white flex items-center justify-center w-8 h-8 rounded-full shrink-0 mt-1 ${
                 currentAyah === index ? 'animate-pulse' : ''
               }`}>
@@ -97,10 +108,10 @@ const QuranDisplay = ({
               </span>
               <div className="w-full">
                 <div 
-                  className={`text-3xl mb-3 font-arabic text-right leading-loose tracking-wide ${isTajweedEnabled ? '' : 'text-black'}`}
+                  className={`text-3xl mb-3 arabic-text leading-loose tracking-wide ${isTajweedEnabled ? '' : 'text-black'}`}
                   dangerouslySetInnerHTML={{ __html: ayah.text }}
                   dir="rtl"
-                  style={{ lineHeight: 2.5 }}
+                  id={`ayah-${quranData.number}-${ayah.numberInSurah}`}
                 />
                 {showTranslation && translationData.ayahs[index] && (
                   <div className="text-islamic-slate mt-2 text-base">

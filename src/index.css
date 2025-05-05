@@ -1,5 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -85,7 +86,16 @@
 
 /* Styles personnalisés */
 .font-arabic {
-  font-family: 'Scheherazade New', serif;
+  font-family: 'Amiri', 'Scheherazade New', serif;
+}
+
+.arabic-text {
+  font-family: 'Amiri', 'Traditional Arabic', 'Scheherazade New', serif;
+  direction: rtl;
+  text-align: right;
+  unicode-bidi: bidi-override;
+  font-size: 24px;
+  line-height: 1.8;
 }
 
 .islamic-border {
