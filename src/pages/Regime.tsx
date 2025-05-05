@@ -5,9 +5,15 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
-import { Book, Calendar, ArrowRight } from 'lucide-react';
+import { Book, Calendar, ArrowRight, Award, Badge } from 'lucide-react';
+import { useUser } from '@/context/UserContext';
 
 const Regime = () => {
+  const { userData } = useUser();
+  
+  const badgeCount = userData.gamification?.badges.filter(b => b.isEarned).length || 0;
+  const totalBadges = userData.gamification?.badges.length || 0;
+  
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -15,8 +21,25 @@ const Regime = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Bannière */}
           <div className="bg-islamic-green text-white p-6 rounded-lg mb-8 shadow-lg">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Régime et nutrition islamique</h1>
-            <p className="opacity-80">Suivez votre progression et atteignez vos objectifs de santé en accord avec les principes islamiques</p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold mb-2">Régime et nutrition islamique</h1>
+                <p className="opacity-80">Suivez votre progression et atteignez vos objectifs de santé en accord avec les principes islamiques</p>
+              </div>
+              
+              {userData.gamification && (
+                <div className="hidden md:flex flex-col items-end">
+                  <div className="flex items-center mb-2">
+                    <Award className="h-5 w-5 mr-2" />
+                    <span className="font-medium">Niveau {userData.gamification.level}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Badge className="h-5 w-5 mr-2" />
+                    <span>{badgeCount}/{totalBadges} badges</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -25,6 +48,56 @@ const Regime = () => {
             </div>
             
             <div className="space-y-6">
+              {/* Statistiques utilisateur */}
+              {userData.gamification && (
+                <Card>
+                  <CardContent className="p-6">
+                    <h2 className="text-xl font-semibold text-islamic-green mb-4">Mon Progrès</h2>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-islamic-green rounded-full w-8 h-8 flex items-center justify-center text-white">
+                            <Award className="h-4 w-4" />
+                          </div>
+                          <span>Niveau</span>
+                        </div>
+                        <span className="font-bold">{userData.gamification.level}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-amber-500 rounded-full w-8 h-8 flex items-center justify-center text-white">
+                            <star className="h-4 w-4" />
+                          </div>
+                          <span>Points</span>
+                        </div>
+                        <span className="font-bold">{userData.gamification.points}</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-orange-500 rounded-full w-8 h-8 flex items-center justify-center text-white">
+                            <fire className="h-4 w-4" />
+                          </div>
+                          <span>Série actuelle</span>
+                        </div>
+                        <span className="font-bold">{userData.gamification.streak} jours</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-purple-500 rounded-full w-8 h-8 flex items-center justify-center text-white">
+                            <Badge className="h-4 w-4" />
+                          </div>
+                          <span>Badges gagnés</span>
+                        </div>
+                        <span className="font-bold">{badgeCount}/{totalBadges}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              
               {/* Pages connexes */}
               <Card>
                 <CardContent className="p-6">

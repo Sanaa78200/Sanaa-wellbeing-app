@@ -5,6 +5,8 @@ import NutritionStats from './NutritionStats';
 import AddMealForm from './AddMealForm';
 import MealList from './MealList';
 import { Meal, UserData, DailyGoal } from './types';
+import { useUser } from '@/context/UserContext';
+import { toast } from '@/components/ui/sonner';
 
 const DietApp = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -21,12 +23,8 @@ const DietApp = () => {
     carbs: 250,
     fat: 65
   });
-  const [userData, setUserData] = useState<UserData>({
-    weight: '',
-    height: '',
-    age: '',
-    goal: 'maintain' // 'lose', 'maintain', 'gain'
-  });
+  
+  const { userData, updateUserData, addPoints, awardBadge, updateChallenge } = useUser();
 
   // Calculer les totaux nutritionnels
   const calculateTotals = () => {
@@ -45,7 +43,12 @@ const DietApp = () => {
     if (!userData.weight || !userData.height || !userData.age) return;
 
     // Formule de base pour les besoins caloriques (formule Harris-Benedict)
-    const bmr = 10 * Number(userData.weight) + 6.25 * Number(userData.height) - 5 * Number(userData.age) + 5;
+    let bmr;
+    if (userData.gender === 'female') {
+      bmr = 10 * Number(userData.weight) + 6.25 * Number(userData.height) - 5 * Number(userData.age) - 161;
+    } else {
+      bmr = 10 * Number(userData.weight) + 6.25 * Number(userData.height) - 5 * Number(userData.age) + 5;
+    }
     
     let calorieGoal = bmr * 1.2; // Facteur d'activité sédentaire par défaut
 
@@ -80,9 +83,20 @@ const DietApp = () => {
 
   // Gérer le changement des données utilisateur
   const handleUserDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setUserData({
-      ...userData,
-      [e.target.name]: e.target.value
+    const { name, value } = e.target;
+    const updatedData = { [name]: value };
+    updateUserData(updatedData);
+  };
+  
+  // Gérer le changement des cases à cocher
+  const handleCheckboxChange = (field: string, value: any) => {
+    if (!userData.preferences) return;
+    
+    updateUserData({
+      preferences: {
+        ...userData.preferences,
+        [field]: value
+      }
     });
   };
 
@@ -96,6 +110,25 @@ const DietApp = () => {
       protein: '',
       carbs: '',
       fat: ''
+    });
+    
+    // Ajouter des points
+    addPoints(10, "Nouveau repas ajouté");
+    
+    // Vérifier si c'est le premier repas
+    if (meals.length === 0) {
+      awardBadge('first-meal');
+    }
+    
+    // Mettre à jour le défi de protéines
+    const totals = calculateTotals();
+    const newProtein = Number(newMeal.protein);
+    if (totals.protein + newProtein >= dailyGoal.protein) {
+      updateChallenge('daily-protein', 1);
+    }
+    
+    toast.success('Repas ajouté !', {
+      description: 'Votre repas a été ajouté avec succès. +10 points !'
     });
   };
 
@@ -129,7 +162,8 @@ const DietApp = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <UserProfile 
           userData={userData} 
-          onUserDataChange={handleUserDataChange} 
+          onUserDataChange={handleUserDataChange}
+          onCheckboxChange={handleCheckboxChange}
         />
         
         <NutritionStats 
