@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 export const useQuranAudio = (currentSurah: number) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -48,27 +49,47 @@ export const useQuranAudio = (currentSurah: number) => {
       throw new Error('Failed to load audio URLs');
     } catch (err) {
       console.error('Error loading audio URLs:', err);
+      toast.error("Erreur lors du chargement audio. Veuillez réessayer.");
       return [];
     } finally {
       setIsAudioLoading(false);
     }
   };
   
-  // Jouer le verset suivant
+  // Jouer le verset suivant avec continuité automatique
   const playNextAyah = () => {
     if (currentAyah < audioUrlsRef.current.length - 1) {
       setCurrentAyah(prevAyah => prevAyah + 1);
       playAyah(currentAyah + 1);
+    } else if (currentSurahRef.current < 114) {
+      // Passer automatiquement à la sourate suivante
+      const nextSurah = currentSurahRef.current + 1;
+      loadNextSurah(nextSurah);
     } else {
-      // C'est la fin de la sourate actuelle
-      if (currentSurahRef.current < 114) {
-        // Passer à la sourate suivante
-        // Cette action nécessite une interaction avec le composant parent
-        // Pour l'instant, nous allons simplement arrêter la lecture
-        stopAudio();
-      } else {
-        stopAudio();
+      // C'est la fin de la dernière sourate
+      stopAudio();
+      toast.info("Vous avez terminé toutes les sourates disponibles");
+    }
+  };
+  
+  // Charger et commencer à lire la sourate suivante
+  const loadNextSurah = async (surahNumber: number) => {
+    try {
+      // Charger la sourate suivante
+      const urls = await loadAudioUrls(surahNumber);
+      if (urls.length > 0) {
+        // Mettre à jour la référence externe de la sourate (sera utilisée par le composant parent)
+        currentSurahRef.current = surahNumber;
+        // Réinitialiser l'index du verset
+        setCurrentAyah(0);
+        // Commencer la lecture du premier verset
+        playAyah(0);
+        // Notification pour informer l'utilisateur
+        toast.success(`Passage à la sourate ${surahNumber}`);
       }
+    } catch (error) {
+      console.error("Erreur lors du chargement de la sourate suivante:", error);
+      stopAudio();
     }
   };
   
@@ -77,7 +98,10 @@ export const useQuranAudio = (currentSurah: number) => {
     if (audioRef.current) {
       if (ayahIndex >= 0 && ayahIndex < audioUrlsRef.current.length) {
         audioRef.current.src = audioUrlsRef.current[ayahIndex];
-        audioRef.current.play().catch(err => console.error('Error playing audio:', err));
+        audioRef.current.play().catch(err => {
+          console.error('Error playing audio:', err);
+          toast.error("Erreur lors de la lecture audio");
+        });
       }
     }
   };
@@ -119,6 +143,7 @@ export const useQuranAudio = (currentSurah: number) => {
         setIsPlaying(true);
       } catch (err) {
         console.error('Error toggling audio:', err);
+        toast.error("Erreur lors de la lecture. Veuillez réessayer.");
       } finally {
         setIsAudioLoading(false);
       }
@@ -142,6 +167,8 @@ export const useQuranAudio = (currentSurah: number) => {
     setCurrentReciter,
     currentAyah,
     totalAyahs,
-    togglePlayAudio
+    togglePlayAudio,
+    // Ajouter la méthode pour passer à la sourate suivante manuellement
+    loadNextSurah
   };
 };

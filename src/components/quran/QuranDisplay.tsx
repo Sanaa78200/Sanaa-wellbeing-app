@@ -1,7 +1,9 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
+import { Progress } from '@/components/ui/progress';
+import { ArrowLeft, ArrowRight, Play, Pause, Volume } from 'lucide-react';
 
 interface Ayah {
   number: number;
@@ -77,21 +79,53 @@ const QuranDisplay = ({
     );
   }
   
-  // Afficher uniquement l'indicateur de verset actuel pour l'audio
+  // Afficher l'interface de lecture audio avec la progression
   if (quranData && translationData) {
+    // Calculer le pourcentage de progression
+    const totalAyahs = quranData.ayahs.length;
+    const progressPercentage = currentAyah >= 0 ? ((currentAyah + 1) / totalAyahs) * 100 : 0;
+    
     return (
       <div className="space-y-6">
-        <div className="text-center py-4 text-islamic-green-dark">
+        {/* Section du titre de la sourate */}
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-arabic font-bold text-islamic-green-dark mb-1">
+            {quranData.name}
+          </h2>
+          <p className="text-islamic-slate">
+            {quranData.englishName} - {quranData.englishNameTranslation}
+          </p>
+        </div>
+        
+        {/* Section de lecture audio */}
+        <div className="bg-islamic-cream rounded-lg p-4 shadow-sm">
+          <div className="text-center py-2 mb-3">
+            {currentAyah >= 0 ? (
+              <div className="text-xl font-semibold text-islamic-green-dark">
+                Lecture en cours: Verset {currentAyah + 1} / {totalAyahs}
+              </div>
+            ) : (
+              <div className="text-islamic-slate">
+                Appuyez sur le bouton "Écouter la récitation" pour commencer la lecture audio
+              </div>
+            )}
+          </div>
+          
+          {/* Barre de progression */}
           {currentAyah >= 0 && (
-            <div className="text-xl font-semibold">
-              Lecture en cours: Verset {currentAyah + 1} / {quranData.ayahs.length}
+            <div className="space-y-3">
+              <Progress value={progressPercentage} className="h-2" />
+              <div className="flex justify-between text-xs text-islamic-slate">
+                <span>Verset {currentAyah + 1}</span>
+                <span>{totalAyahs} versets</span>
+              </div>
             </div>
           )}
-          {currentAyah < 0 && (
-            <div className="text-islamic-slate">
-              Appuyez sur le bouton "Écouter la récitation" pour commencer la lecture audio
-            </div>
-          )}
+        </div>
+        
+        {/* Icône décorative */}
+        <div className="flex justify-center my-4">
+          <Volume className="text-islamic-green-dark h-16 w-16 opacity-20" />
         </div>
       </div>
     );
