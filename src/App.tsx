@@ -11,6 +11,7 @@ import Prieres from "./pages/Prieres";
 import Nutrition from "./pages/Nutrition";
 import Ramadan from "./pages/Ramadan";
 import Coran from "./pages/Coran";
+import Regime from "./pages/Regime";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/nutrition" element={<Nutrition />} />
           <Route path="/ramadan" element={<Ramadan />} />
           <Route path="/coran" element={<Coran />} />
+          <Route path="/regime" element={<Regime />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

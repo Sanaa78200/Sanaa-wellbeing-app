@@ -35,6 +35,7 @@ interface QuranDisplayProps {
   translationData: QuranData | null;
   searchResults: SearchResult | null;
   isTajweedEnabled: boolean;
+  showTranslation: boolean;
   onGoToSurah: (surahNumber: number) => void;
 }
 
@@ -43,6 +44,7 @@ const QuranDisplay = ({
   translationData,
   searchResults,
   isTajweedEnabled,
+  showTranslation,
   onGoToSurah
 }: QuranDisplayProps) => {
   // Afficher les résultats de recherche
@@ -90,7 +92,7 @@ const QuranDisplay = ({
                   dir="rtl"
                   style={{ lineHeight: 2.2 }}
                 />
-                {translationData.ayahs[index] && (
+                {showTranslation && translationData.ayahs[index] && (
                   <div className="text-islamic-slate mt-2 text-base">
                     {translationData.ayahs[index].text}
                   </div>

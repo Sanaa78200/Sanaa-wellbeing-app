@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-6 md:mb-0">
-            <h3 className="text-islamic-green-dark font-bold text-lg mb-3">Fatima Bien-être</h3>
+            <h3 className="text-islamic-green-dark font-bold text-lg mb-3">Sanaa Bien-être</h3>
             <p className="text-islamic-slate max-w-md">
               Application de santé et de bien-être pour femmes musulmanes basée sur les principes islamiques et la science nutritionnelle moderne.
             </p>
@@ -28,8 +28,9 @@ const Footer = () => {
               <h4 className="font-semibold text-islamic-green mb-3">Ressources</h4>
               <ul className="space-y-2">
                 <li><Link to="/nutrition" className="text-islamic-slate hover:text-islamic-green transition-colors">Nutrition</Link></li>
-                <li><Link to="/ramadan" className="text-islamic-slate hover:text-islamic-green transition-colors">Mode Ramadan</Link></li>
                 <li><Link to="/coran" className="text-islamic-slate hover:text-islamic-green transition-colors">Coran</Link></li>
+                <li><Link to="/ramadan" className="text-islamic-slate hover:text-islamic-green transition-colors">Mode Ramadan</Link></li>
+                <li><Link to="/regime" className="text-islamic-slate hover:text-islamic-green transition-colors">Régime</Link></li>
               </ul>
             </div>
             
@@ -45,7 +46,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-islamic-green/10 mt-8 pt-6 text-center text-islamic-slate">
-          <p>&copy; {new Date().getFullYear()} Fatima Bien-être. Tous droits réservés.</p>
+          <p>&copy; {new Date().getFullYear()} Sanaa Bien-être. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

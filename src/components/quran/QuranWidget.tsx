@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Play, Pause, Book } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -65,11 +65,13 @@ const QuranWidget = () => {
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTajweedEnabled, setIsTajweedEnabled] = useState(true);
+  const [showTranslation, setShowTranslation] = useState(true);
   const [currentTranslation, setCurrentTranslation] = useState('fr.hamidullah');
   const [currentReciter, setCurrentReciter] = useState('ar.alafasy');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
   const [isSearchMode, setIsSearchMode] = useState(false);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
@@ -173,16 +175,20 @@ const QuranWidget = () => {
   
   // Lecture audio
   const togglePlayAudio = async () => {
+    if (isAudioLoading) return;
+    
     if (!audioRef.current) {
       audioRef.current = new Audio();
       
       audioRef.current.onended = () => {
         setIsPlaying(false);
+        setIsAudioLoading(false);
       };
       
       audioRef.current.onerror = () => {
         toast.error('Erreur lors de la lecture audio');
         setIsPlaying(false);
+        setIsAudioLoading(false);
       };
     }
     
@@ -191,20 +197,37 @@ const QuranWidget = () => {
       setIsPlaying(false);
     } else {
       try {
+        setIsAudioLoading(true);
         const response = await fetch(`https://api.alquran.cloud/v1/surah/${currentSurah}/${currentReciter}`);
         const data = await response.json();
         
         if (data.code === 200) {
           const audioUrl = data.data.ayahs[0].audio;
           audioRef.current.src = audioUrl.replace('http:', 'https:');
-          await audioRef.current.play();
-          setIsPlaying(true);
+          
+          audioRef.current.oncanplaythrough = () => {
+            audioRef.current?.play()
+              .then(() => {
+                setIsPlaying(true);
+                setIsAudioLoading(false);
+              })
+              .catch(err => {
+                console.error('Erreur de lecture:', err);
+                toast.error('Erreur lors de la lecture audio');
+                setIsAudioLoading(false);
+              });
+              
+            // Nettoyer l'événement après qu'il se soit déclenché
+            audioRef.current!.oncanplaythrough = null;
+          };
         } else {
           toast.error('Erreur lors du chargement audio');
+          setIsAudioLoading(false);
         }
       } catch (err) {
         console.error('Erreur lors du chargement audio:', err);
         toast.error('Erreur de connexion');
+        setIsAudioLoading(false);
       }
     }
   };
@@ -239,6 +262,7 @@ const QuranWidget = () => {
           translationData={null} 
           searchResults={searchResults} 
           isTajweedEnabled={isTajweedEnabled}
+          showTranslation={showTranslation}
           onGoToSurah={setCurrentSurah}
         />
       );
@@ -251,6 +275,7 @@ const QuranWidget = () => {
           translationData={translationData} 
           searchResults={null}
           isTajweedEnabled={isTajweedEnabled}
+          showTranslation={showTranslation}
           onGoToSurah={setCurrentSurah}
         />
       );
@@ -312,13 +337,24 @@ const QuranWidget = () => {
             </Select>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="tajweed-checkbox" 
-              checked={isTajweedEnabled}
-              onCheckedChange={(checked) => setIsTajweedEnabled(checked === true)}
-            />
-            <Label htmlFor="tajweed-checkbox">Afficher le tajwid</Label>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="tajweed-checkbox" 
+                checked={isTajweedEnabled}
+                onCheckedChange={(checked) => setIsTajweedEnabled(checked === true)}
+              />
+              <Label htmlFor="tajweed-checkbox">Afficher le tajwid</Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="translation-checkbox" 
+                checked={showTranslation}
+                onCheckedChange={(checked) => setShowTranslation(checked === true)}
+              />
+              <Label htmlFor="translation-checkbox">Afficher la traduction</Label>
+            </div>
           </div>
         </div>
         
@@ -368,8 +404,17 @@ const QuranWidget = () => {
             className="bg-islamic-green hover:bg-islamic-green-dark"
             variant="default"
           >
-            {isPlaying ? <Pause className="h-4 w-4 mr-1" /> : <Play className="h-4 w-4 mr-1" />}
-            {isPlaying ? 'Arrêter la récitation' : 'Écouter la récitation'}
+            {isAudioLoading ? (
+              <span className="flex items-center">
+                <span className="h-4 w-4 mr-2 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+                Chargement...
+              </span>
+            ) : (
+              <>
+                {isPlaying ? <Pause className="h-4 w-4 mr-1" /> : <Play className="h-4 w-4 mr-1" />}
+                {isPlaying ? 'Arrêter la récitation' : 'Écouter la récitation'}
+              </>
+            )}
           </Button>
           
           <Button 
