@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 
 interface Ayah {
   number: number;
@@ -37,6 +38,7 @@ interface QuranDisplayProps {
   isTajweedEnabled: boolean;
   showTranslation: boolean;
   onGoToSurah: (surahNumber: number) => void;
+  currentAyah?: number;
 }
 
 const QuranDisplay = ({
@@ -45,7 +47,8 @@ const QuranDisplay = ({
   searchResults,
   isTajweedEnabled,
   showTranslation,
-  onGoToSurah
+  onGoToSurah,
+  currentAyah = -1
 }: QuranDisplayProps) => {
   // Afficher les résultats de recherche
   if (searchResults) {
@@ -80,17 +83,24 @@ const QuranDisplay = ({
     return (
       <div className="space-y-6">
         {quranData.ayahs.map((ayah, index) => (
-          <div key={ayah.number} className="pb-4 mb-4 border-b border-islamic-green/10 last:border-none last:mb-0 last:pb-0">
+          <div 
+            key={ayah.number} 
+            className={`pb-4 mb-4 border-b border-islamic-green/10 last:border-none last:mb-0 last:pb-0 ${
+              currentAyah === index ? 'bg-islamic-cream rounded-md p-2' : ''
+            }`}
+          >
             <div className="flex gap-4 items-start">
-              <span className="bg-islamic-green text-white flex items-center justify-center w-8 h-8 rounded-full shrink-0 mt-1">
+              <span className={`bg-islamic-green text-white flex items-center justify-center w-8 h-8 rounded-full shrink-0 mt-1 ${
+                currentAyah === index ? 'animate-pulse' : ''
+              }`}>
                 {ayah.numberInSurah}
               </span>
               <div className="w-full">
                 <div 
-                  className={`text-2xl mb-3 font-arabic text-right leading-loose tracking-wide ${isTajweedEnabled ? '' : 'text-black'}`}
+                  className={`text-3xl mb-3 font-arabic text-right leading-loose tracking-wide ${isTajweedEnabled ? '' : 'text-black'}`}
                   dangerouslySetInnerHTML={{ __html: ayah.text }}
                   dir="rtl"
-                  style={{ lineHeight: 2.2 }}
+                  style={{ lineHeight: 2.5 }}
                 />
                 {showTranslation && translationData.ayahs[index] && (
                   <div className="text-islamic-slate mt-2 text-base">
@@ -101,6 +111,26 @@ const QuranDisplay = ({
             </div>
           </div>
         ))}
+
+        {/* Pagination pour les sourates longues */}
+        {quranData.ayahs.length > 20 && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationLink 
+                  href="#top" 
+                  className="bg-islamic-green text-white hover:bg-islamic-green-dark"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  Retour en haut
+                </PaginationLink>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     );
   }

@@ -1,7 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Book } from 'lucide-react';
 
 import { useQuranData } from './hooks/useQuranData';
 import { useQuranAudio } from './hooks/useQuranAudio';
@@ -22,6 +21,19 @@ const QuranWidget = () => {
   const quranData = useQuranData();
   const quranAudio = useQuranAudio(quranData.currentSurah);
   const quranSearch = useQuranSearch(quranData.currentTranslation);
+
+  // Scroll to active ayah when playing
+  useEffect(() => {
+    if (quranAudio.isPlaying && quranAudio.currentAyah > 0 && quranData.quranData) {
+      const ayahElements = document.querySelectorAll('.ayah-element');
+      if (ayahElements[quranAudio.currentAyah]) {
+        ayahElements[quranAudio.currentAyah].scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
+  }, [quranAudio.currentAyah, quranAudio.isPlaying]);
   
   // Affichage du contenu principal
   const renderContent = () => {
@@ -58,6 +70,7 @@ const QuranWidget = () => {
           isTajweedEnabled={isTajweedEnabled}
           showTranslation={showTranslation}
           onGoToSurah={quranData.setCurrentSurah}
+          currentAyah={quranAudio.isPlaying ? quranAudio.currentAyah : -1}
         />
       );
     }
@@ -66,7 +79,7 @@ const QuranWidget = () => {
   };
   
   return (
-    <Card className="w-full islamic-border">
+    <Card className="w-full islamic-border" id="top">
       <CardHeader className="bg-islamic-green text-white flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
         <CardTitle>Le Saint Coran</CardTitle>
         <div className="text-sm">
@@ -127,6 +140,8 @@ const QuranWidget = () => {
           isSearchMode={quranSearch.isSearchMode}
           isAudioLoading={quranAudio.isAudioLoading}
           isLoading={quranData.isLoading}
+          currentAyah={quranAudio.currentAyah}
+          totalAyahs={quranAudio.totalAyahs}
         />
       </CardContent>
     </Card>

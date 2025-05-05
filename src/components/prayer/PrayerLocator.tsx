@@ -3,14 +3,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MapPin, Navigation, Search } from 'lucide-react';
-import { toast } from "@/components/ui/sonner";
-import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 interface PrayerLocatorProps {
   onLocationChange: (location: { lat: number; lng: number; address: string }) => void;
 }
 
-// Type pour les résultats de recherche Google Maps
+// Type pour les résultats de recherche
 interface LocationSearchResult {
   description: string;
   place_id: string;
@@ -21,18 +20,7 @@ const PrayerLocator = ({ onLocationChange }: PrayerLocatorProps) => {
   const [manualLocation, setManualLocation] = useState('');
   const [searchResults, setSearchResults] = useState<LocationSearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [mapApiKey, setMapApiKey] = useState<string>('');
-  const [isMapKeySet, setIsMapKeySet] = useState(false);
   const searchResultsRef = useRef<HTMLDivElement>(null);
-  
-  // Vérifier si une clé API est stockée localement
-  useEffect(() => {
-    const storedKey = localStorage.getItem('mapApiKey');
-    if (storedKey) {
-      setMapApiKey(storedKey);
-      setIsMapKeySet(true);
-    }
-  }, []);
   
   // Détection des clics en dehors des résultats de recherche
   useEffect(() => {
@@ -62,29 +50,7 @@ const PrayerLocator = ({ onLocationChange }: PrayerLocatorProps) => {
         try {
           const { latitude, longitude } = position.coords;
           
-          // Utiliser Google Maps Reverse Geocoding si disponible, sinon utiliser Nominatim
-          if (isMapKeySet) {
-            try {
-              const response = await fetch(
-                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${mapApiKey}`
-              );
-              
-              const data = await response.json();
-              if (data.status === 'OK' && data.results && data.results.length > 0) {
-                const result = data.results[0];
-                let locationName = result.formatted_address;
-                
-                onLocationChange({ lat: latitude, lng: longitude, address: locationName });
-                toast.success(`Localisation trouvée: ${locationName}`);
-                return;
-              }
-            } catch (error) {
-              console.error("Erreur avec Google Maps API:", error);
-              // Continuer avec Nominatim si Google échoue
-            }
-          }
-          
-          // Fallback vers Nominatim
+          // Utiliser Nominatim pour le géocodage inversé
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
           );
@@ -138,29 +104,14 @@ const PrayerLocator = ({ onLocationChange }: PrayerLocatorProps) => {
       return;
     }
     
-    if (isMapKeySet) {
-      try {
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(manualLocation)}&types=(cities)&key=${mapApiKey}`,
-          { mode: 'no-cors' } // Note: Cette approche peut ne pas fonctionner en frontal - CORS restrictions
-        );
-        
-        // En raison des restrictions CORS, cette partie peut nécessiter un backend
-        const mockResults: LocationSearchResult[] = [
-          { description: `${manualLocation} (option 1)`, place_id: '1' },
-          { description: `${manualLocation} (option 2)`, place_id: '2' },
-        ];
-        
-        setSearchResults(mockResults);
-        setShowResults(true);
-        return;
-      } catch (error) {
-        console.error("Erreur lors de la recherche avec Google Places:", error);
-        // Continuer avec Nominatim en cas d'erreur
-      }
-    }
+    // Simuler les résultats de recherche
+    const mockResults: LocationSearchResult[] = [
+      { description: `${manualLocation} (option principale)`, place_id: '1' },
+      { description: `${manualLocation} (autre option)`, place_id: '2' },
+    ];
     
-    handleManualLocationSubmit();
+    setSearchResults(mockResults);
+    setShowResults(true);
   };
   
   const handleManualLocationSubmit = async (e?: React.FormEvent) => {
@@ -200,8 +151,7 @@ const PrayerLocator = ({ onLocationChange }: PrayerLocatorProps) => {
     setIsLocating(true);
     
     try {
-      // Dans un vrai cas, nous ferions une requête à l'API Google Maps Places Details
-      // Comme cela nécessiterait un backend, nous utilisons Nominatim pour l'instant
+      // Utiliser Nominatim pour la recherche
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(description)}&limit=1`
       );
@@ -227,47 +177,8 @@ const PrayerLocator = ({ onLocationChange }: PrayerLocatorProps) => {
     }
   };
   
-  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const key = e.target.value;
-    setMapApiKey(key);
-    if (key) {
-      localStorage.setItem('mapApiKey', key);
-      setIsMapKeySet(true);
-      toast.success("Clé API enregistrée!");
-    } else {
-      localStorage.removeItem('mapApiKey');
-      setIsMapKeySet(false);
-    }
-  };
-  
   return (
     <div className="space-y-4">
-      {!isMapKeySet && (
-        <Card className="bg-amber-50 border-amber-200 mb-4">
-          <CardContent className="pt-4">
-            <p className="text-amber-800 mb-2 text-sm">
-              Pour une meilleure expérience de localisation, entrez une clé API Google Maps:
-            </p>
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                value={mapApiKey}
-                onChange={handleApiKeyChange}
-                placeholder="Entrez votre clé API Google Maps"
-                className="flex-1"
-              />
-              <Button 
-                onClick={() => setIsMapKeySet(!!mapApiKey)}
-                disabled={!mapApiKey}
-                variant="outline"
-              >
-                Sauvegarder
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-      
       <div className="flex flex-col gap-2">
         <Button 
           onClick={handleGeolocation}
