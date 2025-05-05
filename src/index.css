@@ -111,3 +111,29 @@
 .islamic-prayer-time {
   @apply flex items-center justify-between py-2 px-3 rounded-md hover:bg-islamic-cream transition-colors;
 }
+
+/* Font pour le texte arabe */
+.font-arabic {
+  font-family: 'Amiri', 'Traditional Arabic', serif;
+}
+
+/* Tajweed styles */
+.tajweed-enabled .ham_wasl {color: #AAAAAA;}
+.tajweed-enabled .slnt {color: #AAAAAA;}
+.tajweed-enabled .slnt_2 {color: #AAAAAA;}
+.tajweed-enabled .madda_necessary {color: #337AB7;}
+.tajweed-enabled .madda_obligatory {color: #337AB7;}
+.tajweed-enabled .madda_permissible {color: #337AB7;}
+.tajweed-enabled .madda_normal {color: #337AB7;}
+.tajweed-enabled .qalaqah {color: #FF7E1E;}
+.tajweed-enabled .ikhf_shfw {color: #9400D3;}
+.tajweed-enabled .ikhf {color: #D500B7;}
+.tajweed-enabled .idghm_shfw {color: #58B800;}
+.tajweed-enabled .idghm_ghn {color: #169200;}
+.tajweed-enabled .idghm_wo_ghn {color: #169200;}
+.tajweed-enabled .idghm_mus {color: #169200;}
+.tajweed-enabled .ghn {color: #FF0000;}
+.tajweed-enabled .qlq {color: #DD0008;}
+.tajweed-enabled .iqlb {color: #026BFF;}
+.tajweed-enabled .iqlab {color: #026BFF;}
+

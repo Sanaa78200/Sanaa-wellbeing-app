@@ -10,6 +10,7 @@ import Calculateur from "./pages/Calculateur";
 import Prieres from "./pages/Prieres";
 import Nutrition from "./pages/Nutrition";
 import Ramadan from "./pages/Ramadan";
+import Coran from "./pages/Coran";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/prieres" element={<Prieres />} />
           <Route path="/nutrition" element={<Nutrition />} />
           <Route path="/ramadan" element={<Ramadan />} />
+          <Route path="/coran" element={<Coran />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

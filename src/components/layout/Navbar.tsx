@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, User, Calendar, Utensils, Moon } from 'lucide-react';
+import { Menu, X, Moon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -23,7 +25,11 @@ const Navbar = () => {
   }, {
     name: 'Mode Ramadan',
     path: '/ramadan'
+  }, {
+    name: 'Coran',
+    path: '/coran'
   }];
+  
   return <nav className="bg-white shadow-sm border-b border-islamic-green/10 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
@@ -60,4 +66,5 @@ const Navbar = () => {
       </div>
     </nav>;
 };
+
 export default Navbar;
