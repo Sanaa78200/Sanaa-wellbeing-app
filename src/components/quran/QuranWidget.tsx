@@ -72,6 +72,8 @@ const QuranWidget = () => {
           showTranslation={showTranslation}
           onGoToSurah={quranData.setCurrentSurah}
           currentAyah={quranAudio.isPlaying ? quranAudio.currentAyah : -1}
+          isPlaying={quranAudio.isPlaying}
+          onNavigateAyah={quranAudio.navigateAyah}
         />
       );
     }

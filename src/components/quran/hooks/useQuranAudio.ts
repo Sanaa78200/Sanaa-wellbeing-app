@@ -16,10 +16,8 @@ export const useQuranAudio = (currentSurah: number) => {
   // Mettre à jour la référence quand la sourate change
   useEffect(() => {
     currentSurahRef.current = currentSurah;
-  }, [currentSurah]);
-  
-  // Charger les URLs audio quand la sourate ou le récitant change
-  useEffect(() => {
+    
+    // Réinitialiser l'audio quand la sourate change
     if (isPlaying) {
       stopAudio();
     }
@@ -27,6 +25,51 @@ export const useQuranAudio = (currentSurah: number) => {
     setCurrentAyah(0);
     audioUrlsRef.current = [];
   }, [currentSurah, currentReciter]);
+  
+  // Configurer les gestionnaires d'événements audio
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+    
+    const handleAudioEnd = () => {
+      // Utiliser une fonction de mise à jour pour garantir la valeur la plus récente
+      setCurrentAyah(prev => {
+        const nextAyah = prev + 1;
+        if (nextAyah < audioUrlsRef.current.length) {
+          // Jouer le verset suivant dans la sourate actuelle
+          playAyah(nextAyah);
+          return nextAyah;
+        } else if (currentSurahRef.current < 114) {
+          // Passage à la sourate suivante
+          const nextSurah = currentSurahRef.current + 1;
+          setTimeout(() => loadNextSurah(nextSurah), 500); // Léger délai pour une transition plus fluide
+          return prev; // La mise à jour de currentAyah sera faite dans loadNextSurah
+        } else {
+          // C'est la fin de la dernière sourate
+          stopAudio();
+          toast.info("Vous avez terminé toutes les sourates disponibles");
+          return prev;
+        }
+      });
+    };
+    
+    if (audioRef.current) {
+      // Supprimer d'abord les anciens écouteurs pour éviter les doublons
+      audioRef.current.removeEventListener('ended', handleAudioEnd);
+      // Ajouter le nouvel écouteur
+      audioRef.current.addEventListener('ended', handleAudioEnd);
+    }
+    
+    // Nettoyage à la suppression du composant
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener('ended', handleAudioEnd);
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
   
   // Fonction pour charger les URLs audio d'une sourate
   const loadAudioUrls = async (surahNumber: number) => {
@@ -56,53 +99,55 @@ export const useQuranAudio = (currentSurah: number) => {
     }
   };
   
-  // Jouer le verset suivant avec continuité automatique
-  const playNextAyah = () => {
-    if (currentAyah < audioUrlsRef.current.length - 1) {
-      setCurrentAyah(prevAyah => prevAyah + 1);
-      playAyah(currentAyah + 1);
-    } else if (currentSurahRef.current < 114) {
-      // Passer automatiquement à la sourate suivante
-      const nextSurah = currentSurahRef.current + 1;
-      loadNextSurah(nextSurah);
-    } else {
-      // C'est la fin de la dernière sourate
-      stopAudio();
-      toast.info("Vous avez terminé toutes les sourates disponibles");
-    }
-  };
-  
   // Charger et commencer à lire la sourate suivante
   const loadNextSurah = async (surahNumber: number) => {
     try {
+      setIsAudioLoading(true);
       // Charger la sourate suivante
       const urls = await loadAudioUrls(surahNumber);
       if (urls.length > 0) {
-        // Mettre à jour la référence externe de la sourate (sera utilisée par le composant parent)
+        // Mettre à jour la référence externe de la sourate
         currentSurahRef.current = surahNumber;
         // Réinitialiser l'index du verset
         setCurrentAyah(0);
-        // Commencer la lecture du premier verset
-        playAyah(0);
+        // Commencer la lecture du premier verset avec un léger délai
+        setTimeout(() => {
+          playAyah(0);
+          setIsPlaying(true);
+        }, 300);
         // Notification pour informer l'utilisateur
         toast.success(`Passage à la sourate ${surahNumber}`);
       }
     } catch (error) {
       console.error("Erreur lors du chargement de la sourate suivante:", error);
       stopAudio();
+      toast.error("Impossible de charger la sourate suivante");
+    } finally {
+      setIsAudioLoading(false);
     }
   };
   
-  // Jouer un verset spécifique
+  // Jouer un verset spécifique avec préchargement
   const playAyah = (ayahIndex: number) => {
-    if (audioRef.current) {
-      if (ayahIndex >= 0 && ayahIndex < audioUrlsRef.current.length) {
-        audioRef.current.src = audioUrlsRef.current[ayahIndex];
-        audioRef.current.play().catch(err => {
-          console.error('Error playing audio:', err);
-          toast.error("Erreur lors de la lecture audio");
-        });
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
+    
+    if (ayahIndex >= 0 && ayahIndex < audioUrlsRef.current.length) {
+      // Précharger le verset suivant si disponible
+      if (ayahIndex + 1 < audioUrlsRef.current.length) {
+        const nextAudio = new Audio();
+        nextAudio.src = audioUrlsRef.current[ayahIndex + 1];
+        nextAudio.preload = "auto";
       }
+      
+      // Jouer le verset actuel
+      audioRef.current.src = audioUrlsRef.current[ayahIndex];
+      audioRef.current.play().catch(err => {
+        console.error('Error playing audio:', err);
+        toast.error("Erreur lors de la lecture audio. Veuillez réessayer en cliquant sur le bouton.");
+        setIsPlaying(false);
+      });
     }
   };
   
@@ -119,9 +164,6 @@ export const useQuranAudio = (currentSurah: number) => {
   const togglePlayAudio = async () => {
     if (!audioRef.current) {
       audioRef.current = new Audio();
-      
-      // Configurer l'événement de fin de lecture pour passer au verset suivant
-      audioRef.current.addEventListener('ended', playNextAyah);
     }
     
     if (isPlaying) {
@@ -150,15 +192,28 @@ export const useQuranAudio = (currentSurah: number) => {
     }
   };
   
-  // Nettoyer les ressources audio à la suppression du composant
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.removeEventListener('ended', playNextAyah);
-      }
-    };
-  }, []);
+  // Fonction pour avancer ou reculer manuellement d'un verset
+  const navigateAyah = (direction: 'next' | 'previous') => {
+    if (direction === 'next') {
+      setCurrentAyah(prev => {
+        const next = prev + 1;
+        if (next < audioUrlsRef.current.length) {
+          if (isPlaying) playAyah(next);
+          return next;
+        }
+        return prev;
+      });
+    } else {
+      setCurrentAyah(prev => {
+        const previous = prev - 1;
+        if (previous >= 0) {
+          if (isPlaying) playAyah(previous);
+          return previous;
+        }
+        return prev;
+      });
+    }
+  };
   
   return {
     isPlaying,
@@ -168,7 +223,8 @@ export const useQuranAudio = (currentSurah: number) => {
     currentAyah,
     totalAyahs,
     togglePlayAudio,
-    // Ajouter la méthode pour passer à la sourate suivante manuellement
+    stopAudio,
+    navigateAyah,
     loadNextSurah
   };
 };

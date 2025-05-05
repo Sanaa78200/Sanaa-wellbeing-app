@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Play, Pause, Volume } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Play, Pause, Volume, SkipBack, SkipForward } from 'lucide-react';
 
 interface Ayah {
   number: number;
@@ -41,6 +41,8 @@ interface QuranDisplayProps {
   showTranslation: boolean;
   onGoToSurah: (surahNumber: number) => void;
   currentAyah?: number;
+  isPlaying?: boolean;
+  onNavigateAyah?: (direction: 'next' | 'previous') => void;
 }
 
 const QuranDisplay = ({
@@ -50,7 +52,9 @@ const QuranDisplay = ({
   isTajweedEnabled,
   showTranslation,
   onGoToSurah,
-  currentAyah = -1
+  currentAyah = -1,
+  isPlaying = false,
+  onNavigateAyah
 }: QuranDisplayProps) => {
   // Afficher les résultats de recherche
   if (searchResults) {
@@ -97,9 +101,9 @@ const QuranDisplay = ({
           </p>
         </div>
         
-        {/* Section de lecture audio */}
-        <div className="bg-islamic-cream rounded-lg p-4 shadow-sm">
-          <div className="text-center py-2 mb-3">
+        {/* Section de lecture audio améliorée */}
+        <div className="bg-islamic-cream rounded-lg p-6 shadow-sm">
+          <div className="text-center py-2 mb-4">
             {currentAyah >= 0 ? (
               <div className="text-xl font-semibold text-islamic-green-dark">
                 Lecture en cours: Verset {currentAyah + 1} / {totalAyahs}
@@ -111,21 +115,47 @@ const QuranDisplay = ({
             )}
           </div>
           
-          {/* Barre de progression */}
-          {currentAyah >= 0 && (
-            <div className="space-y-3">
-              <Progress value={progressPercentage} className="h-2" />
-              <div className="flex justify-between text-xs text-islamic-slate">
-                <span>Verset {currentAyah + 1}</span>
-                <span>{totalAyahs} versets</span>
-              </div>
+          {/* Barre de progression améliorée */}
+          <div className="space-y-3">
+            <Progress 
+              value={progressPercentage} 
+              className="h-3 bg-islamic-cream border border-islamic-green/20" 
+            />
+            <div className="flex justify-between text-sm text-islamic-slate">
+              <span>Verset {currentAyah >= 0 ? currentAyah + 1 : 1}</span>
+              <span>{totalAyahs} versets</span>
             </div>
-          )}
+            
+            {/* Contrôles de navigation améliorés pour les versets */}
+            {onNavigateAyah && (
+              <div className="flex justify-center gap-4 mt-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onNavigateAyah('previous')}
+                  disabled={currentAyah <= 0 || !isPlaying}
+                  className="rounded-full border-islamic-green/30 hover:bg-islamic-green/10"
+                >
+                  <SkipBack className="h-5 w-5 text-islamic-green-dark" />
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onNavigateAyah('next')}
+                  disabled={currentAyah >= totalAyahs - 1 || !isPlaying}
+                  className="rounded-full border-islamic-green/30 hover:bg-islamic-green/10"
+                >
+                  <SkipForward className="h-5 w-5 text-islamic-green-dark" />
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Icône décorative */}
-        <div className="flex justify-center my-4">
-          <Volume className="text-islamic-green-dark h-16 w-16 opacity-20" />
+        <div className="flex justify-center my-6">
+          <Volume className={`text-islamic-green-dark h-20 w-20 opacity-20 ${isPlaying ? 'animate-pulse-subtle' : ''}`} />
         </div>
       </div>
     );
