@@ -35,20 +35,128 @@ const Prieres = () => {
     setError(null);
 
     try {
-      // Simulation de chargement pour l'exemple
-      // Dans une implémentation réelle, vous feriez un appel API ici
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Pour l'exemple, nous utilisons des données statiques
-      // Dans une implémentation réelle, vous utiliseriez la réponse de l'API
-      setPrayerTimes([
-        { name: "Fajr", arabicName: "الفجر", time: "04:30", isNext: false, timeUntil: "2h 15min", progressPercent: 75 },
-        { name: "Dhuhr", arabicName: "الظهر", time: "12:30", isNext: true, timeUntil: "4h 45min", progressPercent: 40 },
-        { name: "Asr", arabicName: "العصر", time: "16:15", isNext: false, timeUntil: "8h 30min", progressPercent: 10 },
-        { name: "Maghrib", arabicName: "المغرب", time: "20:15", isNext: false, timeUntil: "12h 30min", progressPercent: 0 },
-        { name: "Isha", arabicName: "العشاء", time: "21:45", isNext: false, timeUntil: "14h", progressPercent: 0 }
-      ]);
-      setHijriDate("15 Ramadan 1446 هـ");
+      const response = await fetch(`https://api.aladhan.com/v1/timings?latitude=${location.lat}&longitude=${location.lng}&method=2`);
+      const data = await response.json();
+      
+      if (data.code === 200) {
+        const timings = data.data.timings;
+        const now = new Date();
+        
+        // Extraire la date hijri
+        const hijri = data.data.date.hijri;
+        setHijriDate(`${hijri.day} ${hijri.month.en} ${hijri.year} هـ`);
+        
+        // Déterminer quelle est la prochaine prière et calculer le temps restant
+        const prayerList: PrayerTime[] = [];
+        const prayerNames = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+        const arabicNames = ["الفجر", "الظهر", "العصر", "المغرب", "العشاء"];
+        
+        // Trouver la prière actuelle et la prochaine
+        let nextPrayerIndex = -1;
+        for (let i = 0; i < prayerNames.length; i++) {
+          const prayerTime = timings[prayerNames[i]];
+          const [hours, minutes] = prayerTime.split(':').map(Number);
+          const prayerDate = new Date();
+          prayerDate.setHours(hours, minutes, 0);
+          
+          if (prayerDate > now) {
+            nextPrayerIndex = i;
+            break;
+          }
+        }
+        
+        // Si aucune prière trouvée pour aujourd'hui, la prochaine est Fajr demain
+        if (nextPrayerIndex === -1) nextPrayerIndex = 0;
+        
+        // Calculer les temps et pourcentages pour chaque prière
+        for (let i = 0; i < prayerNames.length; i++) {
+          const prayerName = prayerNames[i];
+          const prayerTime = timings[prayerName];
+          const [hours, minutes] = prayerTime.split(':').map(Number);
+          
+          const prayerDate = new Date();
+          prayerDate.setHours(hours, minutes, 0);
+          
+          const isNext = i === nextPrayerIndex;
+          
+          // Calculer le temps restant pour la prochaine prière
+          let timeUntil = '';
+          let progressPercent = 0;
+          
+          if (isNext) {
+            const diffMs = prayerDate.getTime() - now.getTime();
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            
+            timeUntil = `${diffHours}h ${diffMinutes}min`;
+            
+            // Si c'est Fajr et nous sommes après Isha, calculer le temps depuis Isha
+            if (i === 0 && prayerNames.length > 0) {
+              const previousPrayerTime = timings[prayerNames[prayerNames.length - 1]];
+              const [prevHours, prevMinutes] = previousPrayerTime.split(':').map(Number);
+              
+              const prevPrayerDate = new Date();
+              prevPrayerDate.setHours(prevHours, prevMinutes, 0);
+              
+              if (prevPrayerDate > now) prevPrayerDate.setDate(prevPrayerDate.getDate() - 1);
+              
+              const totalDiffMs = prayerDate.getTime() - prevPrayerDate.getTime();
+              const elapsedDiffMs = now.getTime() - prevPrayerDate.getTime();
+              
+              progressPercent = Math.min(100, (elapsedDiffMs / totalDiffMs) * 100);
+            } else if (i > 0) {
+              // Pour les autres prières, calculer depuis la prière précédente
+              const previousPrayerTime = timings[prayerNames[i-1]];
+              const [prevHours, prevMinutes] = previousPrayerTime.split(':').map(Number);
+              
+              const prevPrayerDate = new Date();
+              prevPrayerDate.setHours(prevHours, prevMinutes, 0);
+              
+              const totalDiffMs = prayerDate.getTime() - prevPrayerDate.getTime();
+              const elapsedDiffMs = now.getTime() - prevPrayerDate.getTime();
+              
+              progressPercent = Math.min(100, (elapsedDiffMs / totalDiffMs) * 100);
+            }
+          } else {
+            // Pour les autres prières, calculer simplement le temps jusqu'à elles
+            const diffMs = prayerDate.getTime() - now.getTime();
+            
+            // Si la prière est déjà passée aujourd'hui, ajouter 24h
+            if (diffMs < 0) {
+              const tomorrow = new Date(now);
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              tomorrow.setHours(hours, minutes, 0);
+              
+              const tomorrowDiffMs = tomorrow.getTime() - now.getTime();
+              const diffHours = Math.floor(tomorrowDiffMs / (1000 * 60 * 60));
+              const diffMinutes = Math.floor((tomorrowDiffMs % (1000 * 60 * 60)) / (1000 * 60));
+              
+              timeUntil = `${diffHours}h ${diffMinutes}min (demain)`;
+            } else {
+              const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+              const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+              
+              timeUntil = `${diffHours}h ${diffMinutes}min`;
+            }
+          }
+          
+          prayerList.push({
+            name: prayerName,
+            arabicName: arabicNames[i],
+            time: prayerTime,
+            isNext,
+            timeUntil,
+            progressPercent
+          });
+        }
+        
+        setPrayerTimes(prayerList);
+      } else {
+        setError("Erreur lors de la récupération des horaires de prière");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des horaires de prière:", error);
+      setError("Impossible de récupérer les horaires de prière. Veuillez réessayer plus tard.");
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +181,9 @@ const Prieres = () => {
             )}
           </div>
 
-          <PrayerLocator onLocationChange={handleLocationChange} />
+          <div className="max-w-md mx-auto mb-8">
+            <PrayerLocator onLocationChange={handleLocationChange} />
+          </div>
 
           {isLoading ? (
             <div className="text-center py-10">
@@ -105,7 +215,7 @@ const Prieres = () => {
                   </div>
                   <div className="text-2xl font-bold text-center py-3">{prayer.time}</div>
                   
-                  {prayer.isNext && (
+                  {prayer.isNext && prayer.timeUntil && prayer.progressPercent !== undefined && (
                     <div className="mt-2">
                       <p className="text-islamic-green-dark mb-1">Prochaine prière dans {prayer.timeUntil}</p>
                       <Progress value={prayer.progressPercent} className="h-2" />

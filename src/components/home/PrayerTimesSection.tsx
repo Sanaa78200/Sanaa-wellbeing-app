@@ -9,18 +9,25 @@ interface PrayerTime {
   arabicName: string;
 }
 
-const PrayerTimesSection = () => {
+interface PrayerTimesSectionProps {
+  location?: { lat: number; lng: number; address: string };
+}
+
+const PrayerTimesSection = ({ location }: PrayerTimesSectionProps) => {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTime[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPrayerTimes = async () => {
       setIsLoading(true);
+      setError(null);
+      
       try {
-        // Pour demo purposes nous utilisons Paris coordinates
-        const latitude = 48.8566;
-        const longitude = 2.3522;
+        // Coordonnées par défaut (Paris) si aucune localisation n'est fournie
+        const latitude = location?.lat || 48.8566;
+        const longitude = location?.lng || 2.3522;
         const date = new Date();
         
         // Format current date
@@ -41,9 +48,13 @@ const PrayerTimesSection = () => {
           ];
           
           setPrayerTimes(formattedTimes);
+        } else {
+          setError("Impossible de récupérer les horaires de prière");
         }
       } catch (error) {
         console.error("Erreur lors de la récupération des horaires de prière:", error);
+        setError("Erreur de connexion à l'API des horaires de prière");
+        
         // Fallback data if API fails
         setPrayerTimes([
           { name: "Fajr", arabicName: "الفجر", time: "06:15" },
@@ -58,7 +69,7 @@ const PrayerTimesSection = () => {
     };
     
     fetchPrayerTimes();
-  }, []);
+  }, [location]); // Refetch when location changes
   
   // Function to determine if a prayer time is the next one
   const isNextPrayer = (time: string): boolean => {
@@ -81,11 +92,20 @@ const PrayerTimesSection = () => {
                 Horaires des prières
               </CardTitle>
               <p className="text-center text-islamic-slate text-sm">{currentDate}</p>
+              {location && (
+                <p className="text-center text-xs text-islamic-slate mt-1">
+                  {location.address}
+                </p>
+              )}
             </CardHeader>
             <CardContent>
               {isLoading ? (
                 <div className="flex justify-center py-8">
                   <div className="animate-pulse-subtle text-islamic-slate">Chargement des horaires...</div>
+                </div>
+              ) : error ? (
+                <div className="text-center py-4 text-red-500 text-sm">
+                  {error}
                 </div>
               ) : (
                 <div className="space-y-2">
