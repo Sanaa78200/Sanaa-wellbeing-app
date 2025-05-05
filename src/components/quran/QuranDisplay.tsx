@@ -76,21 +76,22 @@ const QuranDisplay = ({
   // Afficher les versets du Coran
   if (quranData && translationData) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         {quranData.ayahs.map((ayah, index) => (
-          <div key={ayah.number} className="pb-3 mb-3 border-b border-islamic-green/10 last:border-none last:mb-0 last:pb-0">
-            <div className="flex gap-3">
-              <span className="bg-islamic-green text-white flex items-center justify-center w-8 h-8 rounded-full shrink-0">
+          <div key={ayah.number} className="pb-4 mb-4 border-b border-islamic-green/10 last:border-none last:mb-0 last:pb-0">
+            <div className="flex gap-4 items-start">
+              <span className="bg-islamic-green text-white flex items-center justify-center w-8 h-8 rounded-full shrink-0 mt-1">
                 {ayah.numberInSurah}
               </span>
-              <div>
+              <div className="w-full">
                 <div 
-                  className={`text-xl mb-2 font-arabic text-right leading-loose ${isTajweedEnabled ? '' : 'text-black'}`}
+                  className={`text-2xl mb-3 font-arabic text-right leading-loose tracking-wide ${isTajweedEnabled ? '' : 'text-black'}`}
                   dangerouslySetInnerHTML={{ __html: ayah.text }}
                   dir="rtl"
+                  style={{ lineHeight: 2.2 }}
                 />
                 {translationData.ayahs[index] && (
-                  <div className="text-islamic-slate text-sm">
+                  <div className="text-islamic-slate mt-2 text-base">
                     {translationData.ayahs[index].text}
                   </div>
                 )}
