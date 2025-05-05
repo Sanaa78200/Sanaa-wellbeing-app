@@ -15,8 +15,8 @@ const Coran = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Bannière */}
           <div className="bg-islamic-green text-white p-6 rounded-lg mb-8 shadow-lg">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">Le Noble Coran</h1>
-            <p className="opacity-80">Explorez le Coran avec des fonctionnalités de récitation audio, traduction et recherche</p>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Le Noble Coran et Recettes Halal</h1>
+            <p className="opacity-80">Écoutez le Coran avec des fonctionnalités de récitation audio et découvrez des recettes halal</p>
           </div>
 
           {/* Principal */}
@@ -49,6 +49,13 @@ const Coran = () => {
                       <div className="flex items-center gap-3">
                         <Book className="text-islamic-green h-5 w-5" />
                         <span>Nutrition halal</span>
+                      </div>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                    <Link to="/regime" className="flex items-center justify-between p-3 rounded-md bg-islamic-cream hover:bg-islamic-cream/80 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <Book className="text-islamic-green h-5 w-5" />
+                        <span>Régime islamique</span>
                       </div>
                       <ArrowRight className="h-4 w-4" />
                     </Link>
