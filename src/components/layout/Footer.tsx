@@ -29,7 +29,7 @@ const Footer = () => {
               <ul className="space-y-2">
                 <li><Link to="/nutrition" className="text-islamic-slate hover:text-islamic-green transition-colors">Nutrition</Link></li>
                 <li><Link to="/ramadan" className="text-islamic-slate hover:text-islamic-green transition-colors">Mode Ramadan</Link></li>
-                <li><a href="#" className="text-islamic-slate hover:text-islamic-green transition-colors">Journal alimentaire</a></li>
+                <li><Link to="/coran" className="text-islamic-slate hover:text-islamic-green transition-colors">Coran</Link></li>
               </ul>
             </div>
             
