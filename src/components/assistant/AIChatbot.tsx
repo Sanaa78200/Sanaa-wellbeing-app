@@ -100,8 +100,8 @@ const AIChatbot = () => {
       
     } catch (error) {
       console.error('Erreur lors de la requête à Groq:', error);
-      toast.error('Erreur de connexion à l'assistant', {
-        description: 'Veuillez réessayer plus tard.'
+      toast.error("Erreur de connexion à l'assistant", {
+        description: "Veuillez réessayer plus tard."
       });
       
       // Message d'erreur de repli
