@@ -11,11 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Trophy, Award, Star, Heart, User, Utensils, Flame } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
+import { toast } from '@/components/ui/sonner';
 
 interface UserProfileProps {
   userData: UserData;
   onUserDataChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-  onCheckboxChange?: (field: string, value: boolean) => void;
+  onCheckboxChange?: (field: string, value: boolean | string[]) => void;
 }
 
 const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfileProps) => {
@@ -33,8 +34,22 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
     }
   };
 
+  const handleTextArrayChange = (field: string, values: string[]) => {
+    if (onCheckboxChange) {
+      onCheckboxChange(field, values);
+    }
+  };
+
+  // Animation lors de la mise à jour du profil
+  const handleProfileUpdate = () => {
+    toast.success("Profil mis à jour", {
+      description: "Vos données ont été sauvegardées avec succès !",
+    });
+    addPoints(10, "Mise à jour du profil");
+  };
+
   return (
-    <div className="islamic-card p-6">
+    <div className="islamic-card p-6 bg-white rounded-lg shadow-sm border border-gray-200">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-islamic-green-dark">Mon Profil</h2>
         {contextUserData.gamification && (
@@ -59,7 +74,9 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
             <span>Niveau {contextUserData.gamification.level}</span>
             <span>Niveau {contextUserData.gamification.level + 1}</span>
           </div>
-          <Progress value={progressToNextLevel} className="h-2" />
+          <Progress value={progressToNextLevel} className="h-2 bg-gray-200">
+            <div className="h-full bg-gradient-to-r from-islamic-green to-islamic-gold" />
+          </Progress>
           <div className="text-right text-xs mt-1 text-gray-500">
             {pointsInCurrentLevel}/{pointsToNextLevel} points
           </div>
@@ -67,24 +84,24 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
       )}
       
       <Tabs defaultValue="info" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid grid-cols-3 mb-4">
-          <TabsTrigger value="info" className="flex items-center">
+        <TabsList className="grid grid-cols-3 mb-4 bg-islamic-cream">
+          <TabsTrigger value="info" className="flex items-center data-[state=active]:bg-islamic-green data-[state=active]:text-white">
             <User className="w-4 h-4 mr-2" />
             Profil
           </TabsTrigger>
-          <TabsTrigger value="preferences" className="flex items-center">
+          <TabsTrigger value="preferences" className="flex items-center data-[state=active]:bg-islamic-green data-[state=active]:text-white">
             <Utensils className="w-4 h-4 mr-2" />
             Préférences
           </TabsTrigger>
-          <TabsTrigger value="achievements" className="flex items-center">
+          <TabsTrigger value="achievements" className="flex items-center data-[state=active]:bg-islamic-green data-[state=active]:text-white">
             <Trophy className="w-4 h-4 mr-2" />
             Récompenses
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="info" className="space-y-4">
+        <TabsContent value="info" className="space-y-4 animate-fade-in">
           <div className="flex items-center space-x-4 mb-4">
-            <Avatar className="w-16 h-16">
+            <Avatar className="w-16 h-16 border-2 border-islamic-green">
               <AvatarImage src={userData.avatar as string} />
               <AvatarFallback className="bg-islamic-green text-white">
                 {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
@@ -192,9 +209,16 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
               </Select>
             </div>
           </div>
+          
+          <button 
+            onClick={handleProfileUpdate}
+            className="w-full mt-4 bg-islamic-green text-white py-2 rounded-md hover:bg-islamic-green-dark transition-colors"
+          >
+            Enregistrer les modifications
+          </button>
         </TabsContent>
         
-        <TabsContent value="preferences" className="space-y-4">
+        <TabsContent value="preferences" className="space-y-4 animate-fade-in">
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
               <Checkbox 
@@ -233,9 +257,7 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
               value={userData.preferences?.allergies?.join(', ') || ''}
               onChange={(e) => {
                 const allergies = e.target.value.split(',').map(item => item.trim()).filter(Boolean);
-                if (onCheckboxChange) {
-                  onCheckboxChange('allergies', allergies as unknown as boolean);
-                }
+                handleTextArrayChange('allergies', allergies);
               }}
             />
           </div>
@@ -249,15 +271,20 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
               value={userData.preferences?.favoriteFoods?.join(', ') || ''}
               onChange={(e) => {
                 const favorites = e.target.value.split(',').map(item => item.trim()).filter(Boolean);
-                if (onCheckboxChange) {
-                  onCheckboxChange('favoriteFoods', favorites as unknown as boolean);
-                }
+                handleTextArrayChange('favoriteFoods', favorites);
               }}
             />
           </div>
+          
+          <button 
+            onClick={handleProfileUpdate}
+            className="w-full mt-4 bg-islamic-green text-white py-2 rounded-md hover:bg-islamic-green-dark transition-colors"
+          >
+            Enregistrer les préférences
+          </button>
         </TabsContent>
         
-        <TabsContent value="achievements" className="space-y-4">
+        <TabsContent value="achievements" className="space-y-4 animate-fade-in">
           {contextUserData.gamification && (
             <>
               <div className="space-y-2">

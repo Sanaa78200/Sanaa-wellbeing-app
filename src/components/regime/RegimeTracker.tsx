@@ -2,9 +2,20 @@
 import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Calendar, ChevronLeft, ChevronRight, TrendingDown, Award, Target, Activity } from 'lucide-react';
+import { useUser } from '@/context/UserContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { toast } from '@/components/ui/sonner';
 
 const RegimeTracker = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const { userData, updateChallenge, completeChallenge } = useUser();
+  
+  // Utilisation du nom de l'utilisateur du contexte
+  const userName = userData.name || 'Utilisateur';
+  const userGoal = userData.goal === 'lose' ? 'Perdre du poids' : 
+                  userData.goal === 'gain' ? 'Prendre du poids' : 'Maintenir le poids';
   
   // Données fictives pour la démonstration
   const weightData = [
@@ -24,57 +35,64 @@ const RegimeTracker = () => {
   ];
   
   const progressData = {
-    poidsInitial: 78.2,
+    poidsInitial: parseFloat(userData.weight) || 78.2,
     poidsActuel: 74.5,
-    poidsCible: 70.0,
-    joursSuivis: 15,
+    poidsCible: userData.goal === 'lose' ? 70.0 : userData.goal === 'gain' ? 85.0 : parseFloat(userData.weight) || 75.0,
+    joursSuivis: userData.gamification?.streak || 15,
     moyenneCalories: 1694,
     perteGraisse: 2.1,
   };
+
+  // Calcul de l'objectif pour l'affichage
+  const objectifTexte = userData.goal === 'lose' ? 
+    `-0.5 kg / semaine` : 
+    userData.goal === 'gain' ? 
+    `+0.5 kg / semaine` : 
+    `Maintenir le poids`;
+
+  // Fonction pour marquer un défi comme accompli
+  const handleCompleteChallenge = (id) => {
+    completeChallenge(id);
+    toast.success("Défi complété !", {
+      description: "Vous avez gagné des points de gamification !",
+    });
+  };
+
+  // Fonction pour mettre à jour la progression d'un défi
+  const handleUpdateChallenge = (id, progress) => {
+    updateChallenge(id, progress);
+  };
   
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Sanaa - Mon Régime</h1>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm">Bonjour, Sophie</span>
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold">
-              S
-            </div>
-          </div>
-        </div>
-      </header>
-      
+    <div className="bg-gray-50 rounded-lg shadow-md overflow-hidden">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-islamic-green text-white shadow-sm">
         <div className="container mx-auto">
           <div className="flex overflow-x-auto">
             <button 
               onClick={() => setActiveTab('dashboard')}
-              className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'dashboard' ? 'border-b-2 border-purple-500 text-purple-500' : 'text-gray-600'}`}
+              className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'dashboard' ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'}`}
             >
               <Activity size={20} />
               <span>Tableau de bord</span>
             </button>
             <button 
               onClick={() => setActiveTab('progress')}
-              className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'progress' ? 'border-b-2 border-purple-500 text-purple-500' : 'text-gray-600'}`}
+              className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'progress' ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'}`}
             >
               <TrendingDown size={20} />
               <span>Progrès</span>
             </button>
             <button 
               onClick={() => setActiveTab('calendar')}
-              className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'calendar' ? 'border-b-2 border-purple-500 text-purple-500' : 'text-gray-600'}`}
+              className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'calendar' ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'}`}
             >
               <Calendar size={20} />
               <span>Calendrier</span>
             </button>
             <button 
               onClick={() => setActiveTab('objectives')}
-              className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'objectives' ? 'border-b-2 border-purple-500 text-purple-500' : 'text-gray-600'}`}
+              className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'objectives' ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'}`}
             >
               <Target size={20} />
               <span>Objectifs</span>
@@ -84,146 +102,204 @@ const RegimeTracker = () => {
       </nav>
       
       {/* Content */}
-      <main className="flex-grow container mx-auto p-4">
+      <main className="p-4">
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Poids card */}
-              <div className="bg-white rounded-lg shadow p-4 flex-1">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold text-gray-700">Évolution du poids</h2>
-                  <div className="text-sm text-gray-500">5 derniers jours</div>
-                </div>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={weightData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
-                      <Tooltip />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="poids" 
-                        stroke="#8884d8" 
-                        activeDot={{ r: 8 }} 
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-4 flex justify-between items-center text-sm">
-                  <div className="text-green-500">-1.0 kg cette semaine</div>
-                  <div className="text-purple-500 font-medium">Objectif: -0.5 kg / semaine</div>
-                </div>
-              </div>
+              <Card className="flex-1">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-semibold text-islamic-green">Évolution du poids</h2>
+                    <div className="text-sm text-gray-500">5 derniers jours</div>
+                  </div>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={weightData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
+                        <Tooltip />
+                        <Legend />
+                        <Line 
+                          type="monotone" 
+                          dataKey="poids" 
+                          stroke="#3E7553" 
+                          activeDot={{ r: 8 }} 
+                          strokeWidth={2}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4 flex justify-between items-center text-sm">
+                    <div className="text-green-500">-1.0 kg cette semaine</div>
+                    <div className="text-islamic-green font-medium">Objectif: {objectifTexte}</div>
+                  </div>
+                </CardContent>
+              </Card>
               
               {/* Calories card */}
-              <div className="bg-white rounded-lg shadow p-4 flex-1">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold text-gray-700">Consommation calorique</h2>
-                  <div className="text-sm text-gray-500">5 derniers jours</div>
-                </div>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={caloriesData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis domain={[1400, 2000]} />
-                      <Tooltip />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="calories" 
-                        stroke="#ff7675" 
-                        activeDot={{ r: 8 }} 
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="mt-4 flex justify-between items-center text-sm">
-                  <div className="text-green-500">-200 kcal en moyenne</div>
-                  <div className="text-purple-500 font-medium">Objectif: 1700 kcal / jour</div>
-                </div>
-              </div>
+              <Card className="flex-1">
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-semibold text-islamic-green">Consommation calorique</h2>
+                    <div className="text-sm text-gray-500">5 derniers jours</div>
+                  </div>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={caloriesData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis domain={[1400, 2000]} />
+                        <Tooltip />
+                        <Legend />
+                        <Line 
+                          type="monotone" 
+                          dataKey="calories" 
+                          stroke="#D4AF37" 
+                          activeDot={{ r: 8 }} 
+                          strokeWidth={2}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4 flex justify-between items-center text-sm">
+                    <div className="text-green-500">-200 kcal en moyenne</div>
+                    <div className="text-islamic-green font-medium">Objectif: 1700 kcal / jour</div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
             
             {/* Récapitulatif en cartes */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg shadow p-4">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-gray-500 text-sm">Poids actuel</p>
-                    <p className="text-2xl font-bold text-gray-800">{progressData.poidsActuel} kg</p>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-gray-500 text-sm">Poids actuel</p>
+                      <p className="text-2xl font-bold text-gray-800">{progressData.poidsActuel} kg</p>
+                    </div>
+                    <div className="bg-islamic-cream p-2 rounded-lg">
+                      <TrendingDown size={24} className="text-islamic-green" />
+                    </div>
                   </div>
-                  <div className="bg-purple-100 p-2 rounded-lg">
-                    <TrendingDown size={24} className="text-purple-600" />
+                  <div className="mt-2 text-green-500 text-sm">
+                    -{(progressData.poidsInitial - progressData.poidsActuel).toFixed(1)} kg depuis le début
                   </div>
-                </div>
-                <div className="mt-2 text-green-500 text-sm">
-                  -{(progressData.poidsInitial - progressData.poidsActuel).toFixed(1)} kg depuis le début
-                </div>
-              </div>
+                </CardContent>
+              </Card>
               
-              <div className="bg-white rounded-lg shadow p-4">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-gray-500 text-sm">Jours suivis</p>
-                    <p className="text-2xl font-bold text-gray-800">{progressData.joursSuivis}</p>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-gray-500 text-sm">Jours suivis</p>
+                      <p className="text-2xl font-bold text-gray-800">{progressData.joursSuivis}</p>
+                    </div>
+                    <div className="bg-islamic-cream p-2 rounded-lg">
+                      <Calendar size={24} className="text-islamic-green" />
+                    </div>
                   </div>
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <Calendar size={24} className="text-green-600" />
+                  <div className="mt-2 text-islamic-green text-sm">
+                    Excellente constance !
                   </div>
-                </div>
-                <div className="mt-2 text-purple-500 text-sm">
-                  Excellente constance !
-                </div>
-              </div>
+                </CardContent>
+              </Card>
               
-              <div className="bg-white rounded-lg shadow p-4">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-gray-500 text-sm">Calories / jour</p>
-                    <p className="text-2xl font-bold text-gray-800">{progressData.moyenneCalories}</p>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-gray-500 text-sm">Calories / jour</p>
+                      <p className="text-2xl font-bold text-gray-800">{progressData.moyenneCalories}</p>
+                    </div>
+                    <div className="bg-islamic-cream p-2 rounded-lg">
+                      <Activity size={24} className="text-islamic-green" />
+                    </div>
                   </div>
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <Activity size={24} className="text-blue-600" />
+                  <div className="mt-2 text-green-500 text-sm">
+                    En dessous de l'objectif de 1700 kcal
                   </div>
-                </div>
-                <div className="mt-2 text-green-500 text-sm">
-                  En dessous de l'objectif de 1700 kcal
-                </div>
-              </div>
+                </CardContent>
+              </Card>
               
-              <div className="bg-white rounded-lg shadow p-4">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="text-gray-500 text-sm">Perte de graisse</p>
-                    <p className="text-2xl font-bold text-gray-800">{progressData.perteGraisse} %</p>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-gray-500 text-sm">Perte de graisse</p>
+                      <p className="text-2xl font-bold text-gray-800">{progressData.perteGraisse} %</p>
+                    </div>
+                    <div className="bg-islamic-cream p-2 rounded-lg">
+                      <Award size={24} className="text-islamic-green" />
+                    </div>
                   </div>
-                  <div className="bg-pink-100 p-2 rounded-lg">
-                    <Award size={24} className="text-pink-600" />
+                  <div className="mt-2 text-green-500 text-sm">
+                    Bonne tendance !
                   </div>
-                </div>
-                <div className="mt-2 text-green-500 text-sm">
-                  Bonne tendance !
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
+
+            {/* Défis quotidiens */}
+            {userData.gamification && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-islamic-green">Défis du jour</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {userData.gamification.challenges.map((challenge) => (
+                    <div 
+                      key={challenge.id} 
+                      className={`p-3 rounded-lg border ${
+                        challenge.isCompleted ? 'bg-islamic-cream border-islamic-green' : 'border-gray-200'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium">{challenge.name}</h4>
+                          <p className="text-xs text-gray-600">{challenge.description}</p>
+                        </div>
+                        <Badge className="bg-islamic-green text-white">+{challenge.points} pts</Badge>
+                      </div>
+                      
+                      {challenge.goal && challenge.progress !== undefined && (
+                        <div className="mt-2">
+                          <div className="flex justify-between text-xs mb-1">
+                            <span>{challenge.progress}/{challenge.goal}</span>
+                            <span>{Math.round((challenge.progress / challenge.goal) * 100)}%</span>
+                          </div>
+                          <Progress value={(challenge.progress / challenge.goal) * 100} className="h-2" />
+                        </div>
+                      )}
+
+                      {!challenge.isCompleted && (
+                        <button 
+                          onClick={() => handleCompleteChallenge(challenge.id)}
+                          className="w-full mt-2 py-1 text-sm text-islamic-green hover:text-islamic-green-dark font-medium"
+                        >
+                          Marquer comme accompli
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
         
         {activeTab === 'progress' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Suivi de votre progression</h2>
+          <Card className="p-6">
+            <CardTitle className="text-xl font-semibold text-islamic-green mb-6">Suivi de votre progression</CardTitle>
             
             <div className="space-y-6">
               <div>
                 <h3 className="text-md font-medium text-gray-700 mb-2">Objectif de poids</h3>
                 <div className="w-full bg-gray-200 rounded-full h-4">
                   <div 
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 h-4 rounded-full" 
+                    className="bg-gradient-to-r from-islamic-green to-islamic-gold h-4 rounded-full" 
                     style={{ width: `${((progressData.poidsInitial - progressData.poidsActuel) / (progressData.poidsInitial - progressData.poidsCible) * 100).toFixed(1)}%` }}
                   ></div>
                 </div>
@@ -232,7 +308,7 @@ const RegimeTracker = () => {
                   <span>{progressData.poidsActuel} kg</span>
                   <span>{progressData.poidsCible} kg</span>
                 </div>
-                <div className="mt-2 text-center text-purple-600 font-medium">
+                <div className="mt-2 text-center text-islamic-green font-medium">
                   {((progressData.poidsInitial - progressData.poidsActuel) / (progressData.poidsInitial - progressData.poidsCible) * 100).toFixed(1)}% de votre objectif atteint
                 </div>
               </div>
@@ -272,13 +348,13 @@ const RegimeTracker = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         )}
         
         {activeTab === 'calendar' && (
-          <div className="bg-white rounded-lg shadow">
+          <Card>
             <div className="p-4 border-b flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-700">Mai 2025</h2>
+              <h2 className="text-lg font-semibold text-islamic-green">Mai 2025</h2>
               <div className="flex space-x-2">
                 <button className="p-1 rounded-full hover:bg-gray-100">
                   <ChevronLeft size={20} className="text-gray-600" />
@@ -309,14 +385,14 @@ const RegimeTracker = () => {
                     <div 
                       key={day}
                       className={`aspect-square flex flex-col items-center justify-center rounded-lg border ${
-                        isToday ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                        isToday ? 'border-islamic-green bg-islamic-cream' : 'border-gray-200'
                       } ${hasData ? 'cursor-pointer hover:bg-gray-50' : 'text-gray-400'}`}
                     >
-                      <span className={`text-sm ${isToday ? 'font-bold text-purple-600' : ''}`}>{day}</span>
+                      <span className={`text-sm ${isToday ? 'font-bold text-islamic-green' : ''}`}>{day}</span>
                       {hasData && (
                         <div className={`w-2 h-2 rounded-full mt-1 ${
                           status === 'success' ? 'bg-green-500' : 
-                          status === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
+                          status === 'warning' ? 'bg-amber-500' : 'bg-red-500'
                         }`}></div>
                       )}
                     </div>
@@ -327,7 +403,7 @@ const RegimeTracker = () => {
             
             {/* Détails du jour */}
             <div className="p-4 border-t">
-              <h3 className="font-medium text-gray-700 mb-3">5 Mai - Aujourd'hui</h3>
+              <h3 className="font-medium text-islamic-green mb-3">5 Mai - Aujourd'hui</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <div>
@@ -352,27 +428,33 @@ const RegimeTracker = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Card>
         )}
         
         {activeTab === 'objectives' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Mes objectifs</h2>
+          <Card className="p-6">
+            <CardTitle className="text-xl font-semibold text-islamic-green mb-6">Mes objectifs</CardTitle>
             
             <div className="space-y-6">
               <div className="border-b pb-4">
                 <h3 className="text-md font-medium text-gray-700 mb-3">Objectif principal</h3>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
-                    <div className="bg-purple-100 p-2 rounded-lg">
-                      <Target size={24} className="text-purple-600" />
+                    <div className="bg-islamic-cream p-2 rounded-lg">
+                      <Target size={24} className="text-islamic-green" />
                     </div>
                     <div>
-                      <div className="font-medium">Atteindre 70 kg</div>
+                      <div className="font-medium">{
+                        userData.goal === 'lose' 
+                          ? `Atteindre ${progressData.poidsCible} kg` 
+                          : userData.goal === 'gain' 
+                            ? `Atteindre ${progressData.poidsCible} kg` 
+                            : 'Maintenir votre poids actuel'
+                      }</div>
                       <div className="text-sm text-gray-500">D'ici le 30 juin 2025</div>
                     </div>
                   </div>
-                  <div className="text-purple-600 font-medium">45% atteint</div>
+                  <div className="text-islamic-green font-medium">45% atteint</div>
                 </div>
               </div>
               
@@ -381,8 +463,8 @@ const RegimeTracker = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center space-x-3">
-                      <div className="bg-blue-100 p-2 rounded-lg">
-                        <Activity size={24} className="text-blue-600" />
+                      <div className="bg-islamic-cream p-2 rounded-lg">
+                        <Activity size={24} className="text-islamic-green" />
                       </div>
                       <div>
                         <div className="font-medium">Calories</div>
@@ -394,21 +476,21 @@ const RegimeTracker = () => {
                   
                   <div className="flex justify-between items-center">
                     <div className="flex items-center space-x-3">
-                      <div className="bg-teal-100 p-2 rounded-lg">
-                        <div className="text-teal-600 font-bold text-lg">H₂O</div>
+                      <div className="bg-islamic-cream p-2 rounded-lg">
+                        <div className="text-islamic-green font-bold text-lg">H₂O</div>
                       </div>
                       <div>
                         <div className="font-medium">Hydratation</div>
                         <div className="text-sm text-gray-500">Boire au moins 2L d'eau par jour</div>
                       </div>
                     </div>
-                    <div className="text-yellow-500">Aujourd'hui: 1.8L</div>
+                    <div className="text-amber-500">Aujourd'hui: 1.8L</div>
                   </div>
                   
                   <div className="flex justify-between items-center">
                     <div className="flex items-center space-x-3">
-                      <div className="bg-pink-100 p-2 rounded-lg">
-                        <div className="text-pink-600 font-bold text-lg">🥗</div>
+                      <div className="bg-islamic-cream p-2 rounded-lg">
+                        <div className="text-islamic-green font-bold text-lg">🥗</div>
                       </div>
                       <div>
                         <div className="font-medium">Protéines</div>
@@ -421,19 +503,15 @@ const RegimeTracker = () => {
               </div>
             </div>
             
-            <button className="mt-6 bg-gradient-to-r from-pink-500 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:opacity-90 transition-opacity">
+            <button 
+              onClick={() => toast.success("Objectifs mis à jour", {description: "Vos objectifs ont été mis à jour avec succès."})}
+              className="mt-6 bg-islamic-green text-white py-2 px-4 rounded-lg font-medium hover:bg-islamic-green-dark transition-colors w-full"
+            >
               Modifier mes objectifs
             </button>
-          </div>
+          </Card>
         )}
       </main>
-      
-      {/* Footer */}
-      <footer className="bg-white border-t py-4">
-        <div className="container mx-auto text-center text-gray-500 text-sm">
-          Sanaa - Suivi de régime personnalisé © 2025
-        </div>
-      </footer>
     </div>
   );
 };

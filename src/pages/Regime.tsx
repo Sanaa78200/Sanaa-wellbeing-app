@@ -4,23 +4,41 @@ import RegimeTracker from '@/components/regime/RegimeTracker';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Book, Calendar, ArrowRight, Award, Badge, Star, Flame } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
+import { toast } from '@/components/ui/sonner';
 
 const Regime = () => {
-  const { userData } = useUser();
+  const { userData, addPoints } = useUser();
   
   const badgeCount = userData.gamification?.badges.filter(b => b.isEarned).length || 0;
   const totalBadges = userData.gamification?.badges.length || 0;
+  
+  // Fonction pour incrémenter les points lorsqu'on consulte la page de régime
+  React.useEffect(() => {
+    // Seulement lors du premier rendu
+    if (userData.gamification) {
+      // Vérifier si c'est la première visite (en vérifiant s'il y a un badge spécifique non acquis)
+      const hasVisitedBefore = localStorage.getItem('regime-visited');
+      if (!hasVisitedBefore) {
+        addPoints(15, "Première consultation de la page régime");
+        localStorage.setItem('regime-visited', 'true');
+        
+        toast.success("Nouvelle section découverte !", {
+          description: "Vous avez gagné 15 points pour avoir découvert la section Régime.",
+        });
+      }
+    }
+  }, []);
   
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow bg-islamic-pattern">
         <div className="container mx-auto px-4 py-8">
-          {/* Bannière */}
-          <div className="bg-islamic-green text-white p-6 rounded-lg mb-8 shadow-lg">
+          {/* Bannière avec animation */}
+          <div className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white p-6 rounded-lg mb-8 shadow-lg animate-fade-in">
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">Régime et nutrition islamique</h1>
@@ -50,9 +68,11 @@ const Regime = () => {
             <div className="space-y-6">
               {/* Statistiques utilisateur */}
               {userData.gamification && (
-                <Card>
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold text-islamic-green mb-4">Mon Progrès</h2>
+                <Card className="border border-islamic-green/20 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xl font-semibold text-islamic-green">Mon Progrès</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -99,9 +119,11 @@ const Regime = () => {
               )}
               
               {/* Pages connexes */}
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold text-islamic-green mb-4">Pages connexes</h2>
+              <Card className="border border-islamic-green/20 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl font-semibold text-islamic-green">Pages connexes</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   <div className="space-y-3">
                     <Link to="/nutrition" className="flex items-center justify-between p-3 rounded-md bg-islamic-cream hover:bg-islamic-cream/80 transition-colors">
                       <div className="flex items-center gap-3">
@@ -129,9 +151,11 @@ const Regime = () => {
               </Card>
               
               {/* Conseils nutritionnels */}
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold text-islamic-green mb-4">Conseils nutritionnels</h2>
+              <Card className="border border-islamic-green/20 shadow-sm hover:shadow-md transition-shadow duration-300">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl font-semibold text-islamic-green">Conseils nutritionnels</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
                   <ul className="list-disc list-inside space-y-2 text-islamic-slate">
                     <li>Privilégiez les aliments naturels et halal</li>
                     <li>Évitez les excès (israf), comme mentionné dans le Coran</li>
