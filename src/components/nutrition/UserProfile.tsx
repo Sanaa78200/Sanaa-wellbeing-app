@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { trophy, award, star, heart, user, utensils } from 'lucide-react';
+import { Trophy, Award, Star, Heart, User, Utensils, Fire } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 
 interface UserProfileProps {
@@ -40,13 +40,13 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
         {contextUserData.gamification && (
           <div className="flex items-center space-x-2">
             <div className="text-amber-500 font-semibold flex items-center">
-              <star className="w-5 h-5 mr-1" />
+              <Star className="w-5 h-5 mr-1" />
               {contextUserData.gamification.points} pts
             </div>
             <Badge className="bg-islamic-green-dark">Niveau {contextUserData.gamification.level}</Badge>
             {contextUserData.gamification.streak > 0 && (
               <Badge className="bg-orange-500 flex items-center">
-                <fire className="w-3 h-3 mr-1" /> {contextUserData.gamification.streak} j
+                <Fire className="w-3 h-3 mr-1" /> {contextUserData.gamification.streak} j
               </Badge>
             )}
           </div>
@@ -69,15 +69,15 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
       <Tabs defaultValue="info" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid grid-cols-3 mb-4">
           <TabsTrigger value="info" className="flex items-center">
-            <user className="w-4 h-4 mr-2" />
+            <User className="w-4 h-4 mr-2" />
             Profil
           </TabsTrigger>
           <TabsTrigger value="preferences" className="flex items-center">
-            <utensils className="w-4 h-4 mr-2" />
+            <Utensils className="w-4 h-4 mr-2" />
             Préférences
           </TabsTrigger>
           <TabsTrigger value="achievements" className="flex items-center">
-            <trophy className="w-4 h-4 mr-2" />
+            <Trophy className="w-4 h-4 mr-2" />
             Récompenses
           </TabsTrigger>
         </TabsList>
@@ -234,7 +234,7 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
               onChange={(e) => {
                 const allergies = e.target.value.split(',').map(item => item.trim()).filter(Boolean);
                 if (onCheckboxChange) {
-                  onCheckboxChange('allergies', allergies);
+                  onCheckboxChange('allergies', allergies as unknown as boolean);
                 }
               }}
             />
@@ -250,7 +250,7 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
               onChange={(e) => {
                 const favorites = e.target.value.split(',').map(item => item.trim()).filter(Boolean);
                 if (onCheckboxChange) {
-                  onCheckboxChange('favoriteFoods', favorites);
+                  onCheckboxChange('favoriteFoods', favorites as unknown as boolean);
                 }
               }}
             />
@@ -262,7 +262,7 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
             <>
               <div className="space-y-2">
                 <h3 className="font-semibold flex items-center">
-                  <award className="w-5 h-5 mr-2 text-amber-500" />
+                  <Award className="w-5 h-5 mr-2 text-amber-500" />
                   Badges
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
@@ -293,7 +293,7 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
               
               <div className="space-y-2">
                 <h3 className="font-semibold flex items-center">
-                  <star className="w-5 h-5 mr-2 text-amber-500" />
+                  <Star className="w-5 h-5 mr-2 text-amber-500" />
                   Défis du jour
                 </h3>
                 <div className="space-y-2">

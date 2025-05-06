@@ -5,7 +5,7 @@ import { useUser } from '@/context/UserContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, send, message as messageIcon, x } from 'lucide-react';
+import { Loader2, Send, MessageCircle, X } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
@@ -125,7 +125,7 @@ const AIChatbot = () => {
           onClick={() => setIsOpen(true)}
           className="fixed bottom-5 right-5 bg-islamic-green text-white rounded-full p-3 shadow-lg hover:bg-islamic-green-dark transition-colors z-50"
         >
-          <messageIcon className="w-6 h-6" />
+          <MessageCircle className="w-6 h-6" />
         </button>
       )}
       
@@ -136,7 +136,7 @@ const AIChatbot = () => {
           <div className="flex justify-between items-center p-3 border-b">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded-full bg-islamic-green flex items-center justify-center">
-                <messageIcon className="w-5 h-5 text-white" />
+                <MessageCircle className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="font-medium">Assistant Nutritionnel</h3>
@@ -144,7 +144,7 @@ const AIChatbot = () => {
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="p-2 rounded-full hover:bg-gray-100">
-              <x className="w-5 h-5" />
+              <X className="w-5 h-5" />
             </button>
           </div>
           
@@ -152,7 +152,7 @@ const AIChatbot = () => {
           <div className="h-96 overflow-y-auto p-4 flex flex-col gap-3">
             {messages.length === 0 ? (
               <div className="text-center text-gray-500 my-auto">
-                <messageIcon className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-30" />
                 <p>Posez une question sur la nutrition halal ou demandez des conseils diététiques basés sur la Sunna.</p>
               </div>
             ) : (
@@ -193,7 +193,7 @@ const AIChatbot = () => {
               className="flex-1"
             />
             <Button type="submit" size="icon" disabled={isLoading || !message.trim()}>
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <send className="w-5 h-5" />}
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </Button>
           </form>
         </div>

@@ -5,7 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
-import { Book, Calendar, ArrowRight, Award, Badge } from 'lucide-react';
+import { Book, Calendar, ArrowRight, Award, Badge, Star, Fire } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 
 const Regime = () => {
@@ -67,7 +67,7 @@ const Regime = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="bg-amber-500 rounded-full w-8 h-8 flex items-center justify-center text-white">
-                            <star className="h-4 w-4" />
+                            <Star className="h-4 w-4" />
                           </div>
                           <span>Points</span>
                         </div>
@@ -77,7 +77,7 @@ const Regime = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="bg-orange-500 rounded-full w-8 h-8 flex items-center justify-center text-white">
-                            <fire className="h-4 w-4" />
+                            <Fire className="h-4 w-4" />
                           </div>
                           <span>Série actuelle</span>
                         </div>
