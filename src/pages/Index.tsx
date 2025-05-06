@@ -8,7 +8,7 @@ import PrayerTimesSection from '@/components/home/PrayerTimesSection';
 import SunnaFoodsSection from '@/components/home/SunnaFoodsSection';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Book, Clock, Calendar, Activity, User } from 'lucide-react';
+import { ArrowRight, Book, Clock, Calendar, Activity, User, Video } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -21,7 +21,7 @@ const Index = () => {
         <section className="py-8 bg-islamic-pattern">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-semibold text-islamic-green text-center mb-6">Accès rapide</h2>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
               <Link to="/coran" className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
                 <Book className="h-10 w-10 text-islamic-green mb-2" />
                 <span className="text-islamic-slate font-medium text-center">Le Saint Coran</span>
@@ -38,6 +38,10 @@ const Index = () => {
                 <Activity className="h-10 w-10 text-islamic-green mb-2" />
                 <span className="text-islamic-slate font-medium text-center">Nutrition & Régime</span>
               </Link>
+              <Link to="/mecca-madina" className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
+                <Video className="h-10 w-10 text-islamic-green mb-2" />
+                <span className="text-islamic-slate font-medium text-center">Mecca & Madina Live</span>
+              </Link>
               <Link to="/profil" className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
                 <User className="h-10 w-10 text-islamic-green mb-2" />
                 <span className="text-islamic-slate font-medium text-center">Mon Profil</span>
@@ -46,16 +50,16 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Vue directe de Madinah */}
+        {/* Vue directe de Mecca et Madina - Aperçu */}
         <section className="py-8 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-semibold text-islamic-green text-center mb-6">Vue directe de Madinah</h2>
+            <h2 className="text-2xl font-semibold text-islamic-green text-center mb-6">Vue directe des Lieux Saints</h2>
             <div className="flex justify-center">
               <Card className="w-full max-w-3xl overflow-hidden">
                 <CardContent className="p-0">
                   <iframe 
-                    src="https://makkahlive.net/medinah.aspx" 
-                    title="Madinah Live" 
+                    src="https://www.youtube.com/embed/y4_c6NIl8XA?mute=1" 
+                    title="Mecca Live" 
                     width="100%" 
                     height="315" 
                     frameBorder="0" 
@@ -66,8 +70,8 @@ const Index = () => {
               </Card>
             </div>
             <div className="text-center mt-4">
-              <Link to="/coran" className="inline-flex items-center text-islamic-green hover:underline">
-                <span>Consulter le Coran</span>
+              <Link to="/mecca-madina" className="inline-flex items-center text-islamic-green hover:underline">
+                <span>Voir Mecca & Madina en direct</span>
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
             </div>

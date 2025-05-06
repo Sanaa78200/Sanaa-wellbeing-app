@@ -14,6 +14,7 @@ import NutritionRegime from "./pages/NutritionRegime";
 import Ramadan from "./pages/Ramadan";
 import Coran from "./pages/Coran";
 import Profil from "./pages/Profil";
+import MeccaMadina from "./pages/MeccaMadina";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/ramadan" element={<Ramadan />} />
             <Route path="/coran" element={<Coran />} />
             <Route path="/profil" element={<Profil />} />
+            <Route path="/mecca-madina" element={<MeccaMadina />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AIChatbot />

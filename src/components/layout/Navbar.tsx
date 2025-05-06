@@ -12,7 +12,7 @@ const Navbar = () => {
   const isMobile = useIsMobile();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // Updated navigation items - removed separate Nutrition and Regime links
+  // Updated navigation items - added Mecca & Madina link
   const navItems = [{
     name: 'Accueil',
     path: '/'
@@ -31,6 +31,9 @@ const Navbar = () => {
   }, {
     name: 'Ramadan',
     path: '/ramadan'
+  }, {
+    name: 'Mecca & Madina',
+    path: '/mecca-madina'
   }, {
     name: 'Profil',
     path: '/profil'

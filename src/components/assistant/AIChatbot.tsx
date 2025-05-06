@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { AIMessage } from '@/components/nutrition/types';
 import { useUser } from '@/context/UserContext';
