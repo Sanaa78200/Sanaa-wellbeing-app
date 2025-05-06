@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Trophy, Award, Star, Heart, User, Utensils, Fire } from 'lucide-react';
+import { Trophy, Award, Star, Heart, User, Utensils, Flame } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 
 interface UserProfileProps {
@@ -46,7 +46,7 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
             <Badge className="bg-islamic-green-dark">Niveau {contextUserData.gamification.level}</Badge>
             {contextUserData.gamification.streak > 0 && (
               <Badge className="bg-orange-500 flex items-center">
-                <Fire className="w-3 h-3 mr-1" /> {contextUserData.gamification.streak} j
+                <Flame className="w-3 h-3 mr-1" /> {contextUserData.gamification.streak} j
               </Badge>
             )}
           </div>
