@@ -4,13 +4,15 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Moon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const isMobile = useIsMobile();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // Navigation items
+  // Updated navigation items - removed separate Nutrition and Regime links
   const navItems = [{
     name: 'Accueil',
     path: '/'
@@ -21,17 +23,17 @@ const Navbar = () => {
     name: 'Prières',
     path: '/prieres'
   }, {
-    name: 'Nutrition',
-    path: '/nutrition'
+    name: 'Nutrition & Régime',
+    path: '/nutrition-regime'
   }, {
     name: 'Coran',
     path: '/coran'
   }, {
-    name: 'Mode Ramadan',
+    name: 'Ramadan',
     path: '/ramadan'
   }, {
-    name: 'Régime',
-    path: '/regime'
+    name: 'Profil',
+    path: '/profil'
   }];
   
   return <nav className="bg-white shadow-sm border-b border-islamic-green/10 sticky top-0 z-50">

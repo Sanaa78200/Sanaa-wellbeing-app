@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useUser } from '@/context/UserContext';
 import { toast } from '@/components/ui/sonner';
+import { useIsMobile } from '@/hooks/use-mobile';
 import RegimeNavigation from './RegimeNavigation';
 import DashboardTab from './tabs/DashboardTab';
 import ProgressTab from './tabs/ProgressTab';
@@ -12,6 +13,7 @@ import { getMockCaloriesData, getMockWeightData, formatObjectiveText } from './R
 const RegimeTracker = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const { userData, updateChallenge, completeChallenge } = useUser();
+  const isMobile = useIsMobile();
   
   // Utilisation du nom de l'utilisateur du contexte
   const userName = userData.name || 'Utilisateur';
@@ -52,7 +54,11 @@ const RegimeTracker = () => {
   return (
     <div className="bg-gray-50 rounded-lg shadow-md overflow-hidden">
       {/* Navigation */}
-      <RegimeNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <RegimeNavigation 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+        isMobile={isMobile} 
+      />
       
       {/* Content */}
       <main className="p-4">
@@ -65,6 +71,7 @@ const RegimeTracker = () => {
             challenges={userData.gamification?.challenges}
             onCompleteChallenge={handleCompleteChallenge}
             onUpdateChallenge={handleUpdateChallenge}
+            isMobile={isMobile}
           />
         )}
         

@@ -6,9 +6,10 @@ import { useUser } from '@/context/UserContext';
 import { toast } from '@/components/ui/sonner';
 import { Activity, Flame, Footprints } from 'lucide-react';
 import Chart from 'chart.js/auto';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const ActivityTracker = () => {
-  const { userData, addPoints, completeChallenge, updateChallenge } = useUser();
+  const { userData, addPoints, completeChallenge, updateChallenge, updateUserData } = useUser();
   const [isConnected, setIsConnected] = useState(false);
   const [activityData, setActivityData] = useState({
     steps: 0,
@@ -22,6 +23,7 @@ const ActivityTracker = () => {
   
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
+  const isMobile = useIsMobile();
   
   // Connecter l'API de santé (simulation)
   const connectHealthAPI = () => {
@@ -83,6 +85,15 @@ const ActivityTracker = () => {
     setWeeklyData(newWeeklyData);
   };
   
+  // Fonction pour enregistrer le profil
+  const saveProfile = () => {
+    // Cette fonction serait utilisée si nous avions un formulaire de profil intégré
+    // Dans notre cas, nous utilisons le contexte utilisateur
+    toast.success("Profil mis à jour", {
+      description: "Vos données de profil ont été sauvegardées."
+    });
+  };
+  
   // Initialiser et mettre à jour le graphique
   useEffect(() => {
     if (isConnected && chartRef.current) {
@@ -130,9 +141,36 @@ const ActivityTracker = () => {
     };
   }, [isConnected, weeklyData]);
   
+  // Vérifier et charger les données d'activité stockées
+  useEffect(() => {
+    const storedActivity = localStorage.getItem('activity-data');
+    if (storedActivity) {
+      const parsedData = JSON.parse(storedActivity);
+      setActivityData(parsedData.activityData);
+      setWeeklyData(parsedData.weeklyData);
+      setIsConnected(true);
+    }
+    
+    // Si des données existent déjà pour l'utilisateur, marquer comme connecté
+    if (userData.weight && userData.height) {
+      setIsConnected(true);
+      simulateActivityData();
+    }
+  }, []);
+  
+  // Sauvegarder les données d'activité dans localStorage
+  useEffect(() => {
+    if (isConnected) {
+      localStorage.setItem('activity-data', JSON.stringify({
+        activityData,
+        weeklyData
+      }));
+    }
+  }, [isConnected, activityData, weeklyData]);
+  
   return (
-    <Card className="islamic-card">
-      <CardHeader className="pb-2">
+    <Card>
+      <CardHeader className={isMobile ? "pb-2" : "pb-2"}>
         <CardTitle className="text-xl font-semibold text-islamic-green">
           Suivi Automatique de Pas et Calories
         </CardTitle>
@@ -187,7 +225,7 @@ const ActivityTracker = () => {
               </div>
             </div>
             
-            <div className="h-64 mt-6">
+            <div className={`h-${isMobile ? '40' : '64'} mt-6`}>
               <canvas ref={chartRef} height="300"></canvas>
             </div>
           </>

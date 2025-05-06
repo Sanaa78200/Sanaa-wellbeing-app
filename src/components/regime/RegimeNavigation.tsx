@@ -6,29 +6,30 @@ import { cn } from '@/lib/utils';
 interface RegimeNavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  isMobile?: boolean;
 }
 
-const RegimeNavigation: React.FC<RegimeNavigationProps> = ({ activeTab, onTabChange }) => {
+const RegimeNavigation: React.FC<RegimeNavigationProps> = ({ activeTab, onTabChange, isMobile }) => {
   const tabs = [
     {
       id: 'dashboard',
       label: 'Tableau de bord',
-      icon: <Activity size={20} />
+      icon: <Activity size={isMobile ? 18 : 20} />
     },
     {
       id: 'progress',
       label: 'Progrès',
-      icon: <TrendingDown size={20} />
+      icon: <TrendingDown size={isMobile ? 18 : 20} />
     },
     {
       id: 'calendar',
       label: 'Calendrier',
-      icon: <Calendar size={20} />
+      icon: <Calendar size={isMobile ? 18 : 20} />
     },
     {
       id: 'objectives',
       label: 'Objectifs',
-      icon: <Target size={20} />
+      icon: <Target size={isMobile ? 18 : 20} />
     }
   ];
 
@@ -41,13 +42,14 @@ const RegimeNavigation: React.FC<RegimeNavigationProps> = ({ activeTab, onTabCha
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={cn(
-                "px-4 py-3 flex items-center space-x-2 whitespace-nowrap",
+                "px-4 py-3 flex items-center space-x-2 whitespace-nowrap flex-1 justify-center",
                 activeTab === tab.id ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'
               )}
               aria-selected={activeTab === tab.id}
             >
               {tab.icon}
-              <span>{tab.label}</span>
+              {!isMobile && <span>{tab.label}</span>}
+              {isMobile && <span className="text-xs">{tab.label.substring(0, 3)}</span>}
             </button>
           ))}
         </div>
