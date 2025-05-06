@@ -23,6 +23,7 @@ interface DashboardTabProps {
   challenges?: Challenge[];
   onCompleteChallenge: (id: string) => void;
   onUpdateChallenge: (id: string, progress: number) => void;
+  isMobile?: boolean; // Added isMobile property
 }
 
 const DashboardTab: React.FC<DashboardTabProps> = ({
@@ -32,7 +33,8 @@ const DashboardTab: React.FC<DashboardTabProps> = ({
   objectifTexte,
   challenges,
   onCompleteChallenge,
-  onUpdateChallenge
+  onUpdateChallenge,
+  isMobile
 }) => {
   return (
     <div className="space-y-6">
