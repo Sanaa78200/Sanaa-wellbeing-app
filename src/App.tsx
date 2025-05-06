@@ -10,10 +10,10 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Calculateur from "./pages/Calculateur";
 import Prieres from "./pages/Prieres";
-import Nutrition from "./pages/Nutrition";
+import NutritionRegime from "./pages/NutritionRegime";
 import Ramadan from "./pages/Ramadan";
 import Coran from "./pages/Coran";
-import Regime from "./pages/Regime";
+import Profil from "./pages/Profil";
 
 const queryClient = new QueryClient();
 
@@ -28,10 +28,10 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/calculateur" element={<Calculateur />} />
             <Route path="/prieres" element={<Prieres />} />
-            <Route path="/nutrition" element={<Nutrition />} />
+            <Route path="/nutrition-regime" element={<NutritionRegime />} />
             <Route path="/ramadan" element={<Ramadan />} />
             <Route path="/coran" element={<Coran />} />
-            <Route path="/regime" element={<Regime />} />
+            <Route path="/profil" element={<Profil />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <AIChatbot />
