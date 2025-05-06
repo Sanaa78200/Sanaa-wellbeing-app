@@ -35,9 +35,10 @@ const RegimeTracker = () => {
   ];
   
   const progressData = {
-    poidsInitial: parseFloat(userData.weight) || 78.2,
+    poidsInitial: typeof userData.weight === 'string' ? parseFloat(userData.weight) : userData.weight || 78.2,
     poidsActuel: 74.5,
-    poidsCible: userData.goal === 'lose' ? 70.0 : userData.goal === 'gain' ? 85.0 : parseFloat(userData.weight) || 75.0,
+    poidsCible: userData.goal === 'lose' ? 70.0 : userData.goal === 'gain' ? 85.0 : 
+                typeof userData.weight === 'string' ? parseFloat(userData.weight) : userData.weight || 75.0,
     joursSuivis: userData.gamification?.streak || 15,
     moyenneCalories: 1694,
     perteGraisse: 2.1,
