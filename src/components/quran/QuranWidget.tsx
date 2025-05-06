@@ -11,7 +11,6 @@ import QuranDisplay from './QuranDisplay';
 import QuranSettings from './QuranSettings';
 import QuranSearch from './QuranSearch';
 import QuranNavigation from './QuranNavigation';
-import RecipeSearch from '../nutrition/RecipeSearch';
 
 const QuranWidget = () => {
   // État UI
@@ -83,7 +82,23 @@ const QuranWidget = () => {
   
   return (
     <>
-      <RecipeSearch />
+      {/* Iframe de Madinah Live */}
+      <Card className="w-full mb-6 islamic-border overflow-hidden">
+        <CardHeader className="bg-islamic-green text-white">
+          <CardTitle>Madinah Live - Vue en direct</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0 flex justify-center">
+          <iframe 
+            src="https://makkahlive.net/medinah.aspx" 
+            title="Madinah Live" 
+            width="100%" 
+            height="315" 
+            frameBorder="0" 
+            allowFullScreen
+            className="w-full"
+          ></iframe>
+        </CardContent>
+      </Card>
       
       <Card className="w-full islamic-border" id="top">
         <CardHeader className="bg-islamic-green text-white flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
@@ -101,6 +116,14 @@ const QuranWidget = () => {
         </CardHeader>
         
         <CardContent className="p-6 space-y-6">
+          {/* Recherche */}
+          <QuranSearch 
+            searchQuery={quranSearch.searchQuery}
+            setSearchQuery={quranSearch.setSearchQuery}
+            handleSearch={quranSearch.handleSearch}
+            isLoading={quranSearch.isLoading}
+          />
+          
           {/* Paramètres */}
           <QuranSettings 
             currentTranslation={quranData.currentTranslation}

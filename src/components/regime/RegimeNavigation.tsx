@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Activity, TrendingDown, Calendar, Target } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface RegimeNavigationProps {
   activeTab: string;
@@ -8,38 +9,47 @@ interface RegimeNavigationProps {
 }
 
 const RegimeNavigation: React.FC<RegimeNavigationProps> = ({ activeTab, onTabChange }) => {
+  const tabs = [
+    {
+      id: 'dashboard',
+      label: 'Tableau de bord',
+      icon: <Activity size={20} />
+    },
+    {
+      id: 'progress',
+      label: 'Progrès',
+      icon: <TrendingDown size={20} />
+    },
+    {
+      id: 'calendar',
+      label: 'Calendrier',
+      icon: <Calendar size={20} />
+    },
+    {
+      id: 'objectives',
+      label: 'Objectifs',
+      icon: <Target size={20} />
+    }
+  ];
+
   return (
     <nav className="bg-islamic-green text-white shadow-sm">
       <div className="container mx-auto">
         <div className="flex overflow-x-auto">
-          <button 
-            onClick={() => onTabChange('dashboard')}
-            className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'dashboard' ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'}`}
-          >
-            <Activity size={20} />
-            <span>Tableau de bord</span>
-          </button>
-          <button 
-            onClick={() => onTabChange('progress')}
-            className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'progress' ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'}`}
-          >
-            <TrendingDown size={20} />
-            <span>Progrès</span>
-          </button>
-          <button 
-            onClick={() => onTabChange('calendar')}
-            className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'calendar' ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'}`}
-          >
-            <Calendar size={20} />
-            <span>Calendrier</span>
-          </button>
-          <button 
-            onClick={() => onTabChange('objectives')}
-            className={`px-4 py-3 flex items-center space-x-2 whitespace-nowrap ${activeTab === 'objectives' ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'}`}
-          >
-            <Target size={20} />
-            <span>Objectifs</span>
-          </button>
+          {tabs.map(tab => (
+            <button 
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={cn(
+                "px-4 py-3 flex items-center space-x-2 whitespace-nowrap",
+                activeTab === tab.id ? 'border-b-2 border-islamic-cream text-islamic-cream' : 'text-white'
+              )}
+              aria-selected={activeTab === tab.id}
+            >
+              {tab.icon}
+              <span>{tab.label}</span>
+            </button>
+          ))}
         </div>
       </div>
     </nav>
