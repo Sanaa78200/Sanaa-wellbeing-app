@@ -43,11 +43,11 @@ const Profil = () => {
     updateUserData({ [name]: value });
   };
 
-  const handleGenderChange = (value: string) => {
+  const handleGenderChange = (value: 'male' | 'female' | 'other') => {
     updateUserData({ gender: value });
   };
 
-  const handleGoalChange = (value: string) => {
+  const handleGoalChange = (value: 'lose' | 'maintain' | 'gain') => {
     updateUserData({ goal: value });
   };
 
@@ -155,7 +155,7 @@ const Profil = () => {
                         <div className="space-y-2">
                           <Label htmlFor="gender">Genre</Label>
                           <Select 
-                            value={userData.gender as string || 'male'}
+                            value={userData.gender || 'male'}
                             onValueChange={handleGenderChange}
                           >
                             <SelectTrigger id="gender">
@@ -280,7 +280,7 @@ const Profil = () => {
                         <div className="space-y-2">
                           <Label htmlFor="goal">Objectif principal</Label>
                           <Select 
-                            value={userData.goal}
+                            value={userData.goal || 'maintain'}
                             onValueChange={handleGoalChange}
                           >
                             <SelectTrigger id="goal">
