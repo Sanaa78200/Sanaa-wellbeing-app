@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { UserData } from './types';
 import { Input } from '@/components/ui/input';
@@ -9,9 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Trophy, Award, Star, Heart, User, Utensils, Flame } from 'lucide-react';
+import { Trophy, Award, Star, Heart, User, Utensils, Flame, Settings } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 import { toast } from '@/components/ui/sonner';
+import SettingsPanel from '../settings/SettingsPanel';
 
 interface UserProfileProps {
   userData: UserData;
@@ -84,7 +84,7 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
       )}
       
       <Tabs defaultValue="info" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid grid-cols-3 mb-4 bg-islamic-cream">
+        <TabsList className="grid grid-cols-4 mb-4 bg-islamic-cream">
           <TabsTrigger value="info" className="flex items-center data-[state=active]:bg-islamic-green data-[state=active]:text-white">
             <User className="w-4 h-4 mr-2" />
             Profil
@@ -96,6 +96,10 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
           <TabsTrigger value="achievements" className="flex items-center data-[state=active]:bg-islamic-green data-[state=active]:text-white">
             <Trophy className="w-4 h-4 mr-2" />
             Récompenses
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center data-[state=active]:bg-islamic-green data-[state=active]:text-white">
+            <Settings className="w-4 h-4 mr-2" />
+            Paramètres
           </TabsTrigger>
         </TabsList>
         
@@ -355,6 +359,10 @@ const UserProfile = ({ userData, onUserDataChange, onCheckboxChange }: UserProfi
               </div>
             </>
           )}
+        </TabsContent>
+        
+        <TabsContent value="settings" className="space-y-4 animate-fade-in">
+          <SettingsPanel />
         </TabsContent>
       </Tabs>
     </div>

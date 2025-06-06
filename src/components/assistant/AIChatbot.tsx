@@ -9,9 +9,6 @@ import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import ChatForm from './ChatForm';
 
-// Nouvelle clé API GROQ mise à jour
-const GROQ_API_KEY = "gsk_Y8qGXnZ4KrFwJ9PvH2mLWGdyb3FYeKpN7QsRt5AcB8xD1fE0vW6uI9oT3hM2jL";
-
 // Questions suggérées optimisées pour mobile
 const suggestedQuestions = [
   "Alimentation halal pour perdre du poids ?",
@@ -33,6 +30,15 @@ const AIChatbot = () => {
   const [editText, setEditText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { userData, addPoints } = useUser();
+  
+  // Fonction pour récupérer la clé API sécurisée
+  const getApiKey = () => {
+    if (typeof window !== 'undefined' && (window as any).getSecureApiKey) {
+      return (window as any).getSecureApiKey('GROQ') || (window as any).getSecureApiKey('groq');
+    }
+    // Fallback sur l'ancienne clé pour la compatibilité
+    return "gsk_Y8qGXnZ4KrFwJ9PvH2mLWGdyb3FYeKpN7QsRt5AcB8xD1fE0vW6uI9oT3hM2jL";
+  };
   
   // Détection mobile améliorée
   useEffect(() => {
@@ -144,6 +150,15 @@ const AIChatbot = () => {
     
     if (!message.trim()) return;
     
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      toast.error("Clé API manquante", {
+        description: "Veuillez configurer votre clé API dans les paramètres",
+        duration: 4000,
+      });
+      return;
+    }
+    
     const userMessage: AIMessage = {
       role: 'user',
       content: message,
@@ -161,7 +176,7 @@ const AIChatbot = () => {
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -235,13 +250,13 @@ const AIChatbot = () => {
       }
       
       toast.error("Assistant temporairement indisponible", {
-        description: "Vérifiez votre connexion internet et réessayez",
+        description: "Vérifiez votre clé API dans les paramètres ou votre connexion internet",
         duration: 4000,
       });
       
       const fallbackMessage: AIMessage = {
         role: 'assistant',
-        content: "السلام عليكم، je rencontre des difficultés techniques temporaires. En attendant, rappelez-vous que selon la Sunna, il est recommandé de manger avec modération et de privilégier les aliments naturels et halal. Réessayez dans quelques instants, بإذن الله.",
+        content: "السلام عليكم، je rencontre des difficultés techniques temporaires. Vérifiez que votre clé API est bien configurée dans les paramètres. En attendant, rappelez-vous que selon la Sunna, il est recommandé de manger avec modération et de privilégier les aliments naturels et halal. Réessayez dans quelques instants, بإذن الله.",
         timestamp: new Date().toISOString()
       };
       
