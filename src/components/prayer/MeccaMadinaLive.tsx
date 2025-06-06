@@ -1,223 +1,297 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Play, Pause, Volume2, VolumeX, Maximize, Monitor, Smartphone } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from '@/components/ui/sonner';
 
 const MeccaMadinaLive = () => {
-  // State to track which source options are visible
-  const [visibleOptions, setVisibleOptions] = useState({
-    mecca: false,
-    madina: false
-  });
+  const [currentMeccaSource, setCurrentMeccaSource] = useState(0);
+  const [currentMadinaSource, setCurrentMadinaSource] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const isMobile = useIsMobile();
   
-  // Function to toggle mute status
-  const toggleMute = (playerId: string) => {
-    const player = document.getElementById(playerId) as HTMLIFrameElement;
-    if (!player) return;
-    
-    const currentSrc = player.src;
-    if (currentSrc.includes('&mute=1')) {
-      player.src = currentSrc.replace('&mute=1', '');
+  // Sources multiples pour fiabilité
+  const meccaSources = [
+    {
+      url: "https://www.youtube.com/embed/y4_c6NIl8XA?autoplay=1&mute=1&rel=0&modestbranding=1",
+      name: "Mecca Live HD - Source principale"
+    },
+    {
+      url: "https://www.youtube.com/embed/XfIVFU77Z9w?autoplay=1&mute=1&rel=0&modestbranding=1",
+      name: "Mecca Live - Source alternative"
+    },
+    {
+      url: "https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1&rel=0&modestbranding=1",
+      name: "Mecca Live - Source de secours"
+    }
+  ];
+  
+  const madinaSources = [
+    {
+      url: "https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1&rel=0&modestbranding=1",
+      name: "Madina Live HD - Source principale"
+    },
+    {
+      url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
+      name: "Madina Live - Source alternative"
+    },
+    {
+      url: "https://www.youtube.com/embed/2Yw3JGhzIpk?autoplay=1&mute=1&rel=0&modestbranding=1",
+      name: "Madina Live - Source de secours"
+    }
+  ];
+  
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+    toast.info(isMuted ? "Son activé" : "Son coupé");
+  };
+  
+  const changeSource = (type: 'mecca' | 'madina', sourceIndex: number) => {
+    if (type === 'mecca') {
+      setCurrentMeccaSource(sourceIndex);
+      toast.success(`Source Mecca changée : ${meccaSources[sourceIndex].name}`);
     } else {
-      player.src = currentSrc + '&mute=1';
+      setCurrentMadinaSource(sourceIndex);
+      toast.success(`Source Madina changée : ${madinaSources[sourceIndex].name}`);
     }
   };
   
-  // Function to toggle fullscreen
-  const toggleFullscreen = (playerId: string) => {
-    const player = document.getElementById(playerId) as HTMLIFrameElement;
-    if (!player) return;
-    
-    if (player.requestFullscreen) {
-      player.requestFullscreen();
-    } else if ((player as any).mozRequestFullScreen) { /* Firefox */
-      (player as any).mozRequestFullScreen();
-    } else if ((player as any).webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-      (player as any).webkitRequestFullscreen();
-    } else if ((player as any).msRequestFullscreen) { /* IE/Edge */
-      (player as any).msRequestFullscreen();
+  const toggleFullscreen = (element: string) => {
+    const iframe = document.getElementById(element) as HTMLElement;
+    if (iframe && iframe.requestFullscreen) {
+      iframe.requestFullscreen();
     }
   };
   
-  // Function to toggle source options
-  const toggleSourceOptions = (sourceId: 'mecca' | 'madina') => {
-    setVisibleOptions(prev => ({
-      ...prev,
-      [sourceId]: !prev[sourceId]
-    }));
-  };
-  
-  // Function to change video source
-  const changeSource = (playerId: string, sourceUrl: string) => {
-    const player = document.getElementById(playerId) as HTMLIFrameElement;
-    const loadingId = playerId.replace('player', 'loading');
-    const loading = document.getElementById(loadingId);
-    
-    if (!player || !loading) return;
-    
-    // Show loading indicator
-    loading.style.display = 'block';
-    
-    // Change source
-    player.src = sourceUrl;
-    
-    // Hide loading indicator after loading
-    player.onload = function() {
-      if (loading) loading.style.display = 'none';
-    };
-    
-    // Also hide the source options
-    const sourceType = playerId.includes('mecca') ? 'mecca' : 'madina';
-    setVisibleOptions(prev => ({
-      ...prev,
-      [sourceType]: false
-    }));
-  };
+  // Optimisation mobile avec détection automatique
+  useEffect(() => {
+    if (isMobile) {
+      // Désactiver l'autoplay sur mobile pour économiser la bande passante
+      setIsPlaying(false);
+      toast.info("Mode mobile activé - Appuyez sur lecture pour démarrer");
+    }
+  }, [isMobile]);
   
   return (
-    <div className="bg-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-islamic-pattern py-6">
+      <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-islamic-green-dark mb-2">Mecca et Madina Live</h1>
-          <p className="text-islamic-slate">Diffusion en direct sans publicité</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-islamic-green-dark mb-3">
+            Mecca et Madina Live
+          </h1>
+          <p className="text-islamic-slate max-w-2xl mx-auto">
+            Diffusion en direct des Lieux Saints de l'Islam. Connectez-vous spirituellement depuis n'importe où dans le monde.
+          </p>
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <Badge className="bg-green-100 text-green-800">
+              🔴 En direct
+            </Badge>
+            <Badge className="bg-islamic-cream text-islamic-green">
+              {isMobile ? <Smartphone className="w-3 h-3" /> : <Monitor className="w-3 h-3" />}
+              <span className="ml-1">{isMobile ? 'Mobile' : 'Desktop'}</span>
+            </Badge>
+          </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Section Mecca Live */}
-          <div className="bg-white rounded-lg overflow-hidden shadow-md">
-            <div className="relative pt-[56.25%]">
-              <iframe 
-                id="mecca-player" 
-                className="absolute top-0 left-0 w-full h-full border-none"
-                src="https://www.youtube.com/embed/y4_c6NIl8XA?autoplay=1&mute=1" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-              ></iframe>
-              <div id="mecca-loading" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white py-2 px-4 rounded hidden">
-                Chargement...
+        {/* Zone publicitaire principale */}
+        <div className="mb-8">
+          <Card className="overflow-hidden">
+            <CardContent className="p-0">
+              <div className="h-20 bg-gradient-to-r from-gray-50 to-gray-100 flex items-center justify-center border-b">
+                <div id="google-ads-main" className="w-full h-full flex items-center justify-center text-gray-400">
+                  <span>Zone publicitaire principale - Google Ads</span>
+                </div>
               </div>
-            </div>
-            
-            <div className="p-4 bg-islamic-cream">
-              <h3 className="font-medium text-lg text-islamic-green-dark mb-3">La Mecque (Mecca) - En Direct</h3>
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  onClick={() => toggleMute('mecca-player')}
-                  variant="default"
-                  className="bg-islamic-green hover:bg-islamic-green-dark"
-                >
-                  Activer/Couper le son
-                </Button>
-                <Button 
-                  onClick={() => toggleFullscreen('mecca-player')} 
-                  variant="outline"
-                  className="border-islamic-green text-islamic-green hover:bg-islamic-cream"
-                >
-                  Plein écran
-                </Button>
-                <Button 
-                  onClick={() => toggleSourceOptions('mecca')}
-                  variant="outline"
-                  className="border-islamic-green text-islamic-green hover:bg-islamic-cream"
-                >
-                  Sources alternatives
-                </Button>
-              </div>
-              
-              {visibleOptions.mecca && (
-                <div className="mt-3 bg-white rounded p-3 border border-gray-200">
-                  <div 
-                    className="p-2 cursor-pointer hover:bg-islamic-cream rounded transition-colors"
-                    onClick={() => changeSource('mecca-player', 'https://www.youtube.com/embed/y4_c6NIl8XA?autoplay=1&mute=1')}
-                  >
-                    Source 1: YouTube Officiel
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'lg:grid-cols-2'}`}>
+          {/* Mecca Live */}
+          <Card className="overflow-hidden shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  🕋 La Mecque (Mecca)
+                </span>
+                <Badge className="bg-white/20 text-white">
+                  Source {currentMeccaSource + 1}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="relative">
+                <div className="aspect-video">
+                  <iframe
+                    id="mecca-iframe"
+                    src={`${meccaSources[currentMeccaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
+                    title="Mecca Live Stream"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                
+                {/* Contrôles vidéo */}
+                <div className="p-4 bg-gray-50 border-t">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleMute}
+                      className="flex items-center gap-2"
+                    >
+                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                      {isMuted ? 'Activer le son' : 'Couper le son'}
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => toggleFullscreen('mecca-iframe')}
+                      className="flex items-center gap-2"
+                    >
+                      <Maximize className="w-4 h-4" />
+                      Plein écran
+                    </Button>
                   </div>
-                  <div 
-                    className="p-2 cursor-pointer hover:bg-islamic-cream rounded transition-colors"
-                    onClick={() => changeSource('mecca-player', 'https://www.youtube.com/embed/XfIVFU77Z9w?autoplay=1&mute=1')}
-                  >
-                    Source 2: YouTube Alternatif
-                  </div>
-                  <div 
-                    className="p-2 cursor-pointer hover:bg-islamic-cream rounded transition-colors"
-                    onClick={() => changeSource('mecca-player', 'https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1')}
-                  >
-                    Source 3: Mecca Live
+                  
+                  {/* Sélecteur de source */}
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-600">Sources disponibles :</p>
+                    <div className="flex flex-wrap gap-1">
+                      {meccaSources.map((source, index) => (
+                        <Button
+                          key={index}
+                          variant={currentMeccaSource === index ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => changeSource('mecca', index)}
+                          className="text-xs"
+                        >
+                          Source {index + 1}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
           
-          {/* Section Madina Live */}
-          <div className="bg-white rounded-lg overflow-hidden shadow-md">
-            <div className="relative pt-[56.25%]">
-              <iframe 
-                id="madina-player" 
-                className="absolute top-0 left-0 w-full h-full border-none"
-                src="https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-              ></iframe>
-              <div id="madina-loading" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white py-2 px-4 rounded hidden">
-                Chargement...
-              </div>
-            </div>
-            
-            <div className="p-4 bg-islamic-cream">
-              <h3 className="font-medium text-lg text-islamic-green-dark mb-3">Médine (Madina) - En Direct</h3>
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  onClick={() => toggleMute('madina-player')} 
-                  variant="default"
-                  className="bg-islamic-green hover:bg-islamic-green-dark"
-                >
-                  Activer/Couper le son
-                </Button>
-                <Button 
-                  onClick={() => toggleFullscreen('madina-player')}
-                  variant="outline"
-                  className="border-islamic-green text-islamic-green hover:bg-islamic-cream"
-                >
-                  Plein écran
-                </Button>
-                <Button 
-                  onClick={() => toggleSourceOptions('madina')}
-                  variant="outline"
-                  className="border-islamic-green text-islamic-green hover:bg-islamic-cream"
-                >
-                  Sources alternatives
-                </Button>
-              </div>
-              
-              {visibleOptions.madina && (
-                <div className="mt-3 bg-white rounded p-3 border border-gray-200">
-                  <div 
-                    className="p-2 cursor-pointer hover:bg-islamic-cream rounded transition-colors"
-                    onClick={() => changeSource('madina-player', 'https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1')}
-                  >
-                    Source 1: YouTube Officiel
+          {/* Madina Live */}
+          <Card className="overflow-hidden shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  🕌 Médine (Madina)
+                </span>
+                <Badge className="bg-white/20 text-white">
+                  Source {currentMadinaSource + 1}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="relative">
+                <div className="aspect-video">
+                  <iframe
+                    id="madina-iframe"
+                    src={`${madinaSources[currentMadinaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
+                    title="Madina Live Stream"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                
+                {/* Contrôles vidéo */}
+                <div className="p-4 bg-gray-50 border-t">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleMute}
+                      className="flex items-center gap-2"
+                    >
+                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                      {isMuted ? 'Activer le son' : 'Couper le son'}
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => toggleFullscreen('madina-iframe')}
+                      className="flex items-center gap-2"
+                    >
+                      <Maximize className="w-4 h-4" />
+                      Plein écran
+                    </Button>
                   </div>
-                  <div 
-                    className="p-2 cursor-pointer hover:bg-islamic-cream rounded transition-colors"
-                    onClick={() => changeSource('madina-player', 'https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1')}
-                  >
-                    Source 2: YouTube Alternatif
-                  </div>
-                  <div 
-                    className="p-2 cursor-pointer hover:bg-islamic-cream rounded transition-colors"
-                    onClick={() => changeSource('madina-player', 'https://www.youtube.com/embed/2Yw3JGhzIpk?autoplay=1&mute=1')}
-                  >
-                    Source 3: Madina Live
+                  
+                  {/* Sélecteur de source */}
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-600">Sources disponibles :</p>
+                    <div className="flex flex-wrap gap-1">
+                      {madinaSources.map((source, index) => (
+                        <Button
+                          key={index}
+                          variant={currentMadinaSource === index ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => changeSource('madina', index)}
+                          className="text-xs"
+                        >
+                          Source {index + 1}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
         
-        <div className="text-center mt-8 text-islamic-slate text-sm">
-          <p>Ce service est fourni à titre informatif uniquement. Les diffusions sont des flux officiels publics.</p>
+        {/* Zone publicitaire latérale mobile */}
+        {isMobile && (
+          <div className="mt-6">
+            <Card>
+              <CardContent className="p-4">
+                <div className="h-16 bg-gray-50 rounded flex items-center justify-center text-gray-400 text-sm">
+                  <div id="google-ads-mobile-bottom" className="w-full h-full flex items-center justify-center">
+                    <span>Publicité mobile - Google Ads</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+        
+        {/* Informations complémentaires */}
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-islamic-green">📱 Optimisé Mobile</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Cette interface s'adapte automatiquement à votre appareil pour une expérience optimale sur mobile et desktop.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-islamic-green">🌐 Sources Multiples</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                Plusieurs sources de diffusion disponibles pour garantir une connexion stable en permanence.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

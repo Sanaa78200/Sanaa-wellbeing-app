@@ -1,22 +1,24 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { AIMessage } from '@/components/nutrition/types';
 import { useUser } from '@/context/UserContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Send, MessageCircle, X } from 'lucide-react';
+import { Loader2, Send, MessageCircle, X, Smartphone } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
-const GROQ_API_KEY = "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";
+// Nouvelle clé API GROQ mise à jour
+const GROQ_API_KEY = "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";
 
-// Questions suggérées pour améliorer l'expérience utilisateur
+// Questions suggérées optimisées pour mobile
 const suggestedQuestions = [
-  "Quels sont les aliments recommandés dans l'Islam pour la santé ?",
-  "Comment puis-je équilibrer mon alimentation pendant le Ramadan ?",
-  "Quels aliments sont bons pour perdre du poids selon la Sunna ?",
-  "Quelles sont les meilleures sources de protéines halal ?",
-  "Comment maintenir un poids santé selon les enseignements islamiques ?"
+  "Alimentation halal pour perdre du poids ?",
+  "Conseils nutrition pendant Ramadan ?",
+  "Protéines halal recommandées ?",
+  "Menu équilibré selon la Sunna ?",
+  "Aliments énergétiques islamiques ?"
 ];
 
 const AIChatbot = () => {
@@ -26,8 +28,21 @@ const AIChatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [isMobileOptimized, setIsMobileOptimized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { userData, addPoints } = useUser();
+  
+  // Détection mobile améliorée
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobile = window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobileOptimized(isMobile);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,29 +52,33 @@ const AIChatbot = () => {
     scrollToBottom();
   }, [messages, isOpen]);
   
-  // Effect pour masquer les suggestions après avoir posé quelques questions
   useEffect(() => {
     if (messages.length > 3) {
       setShowSuggestions(false);
     }
   }, [messages.length]);
   
-  const systemMessage = `Tu es un assistant IA islamique spécialisé dans la nutrition halal et la diététique. Tu donnes des conseils basés sur les hadiths et le Coran.
+  // Système de prompts amélioré et plus cohérent
+  const systemMessage = `Tu es un assistant IA islamique spécialisé dans la nutrition halal, la diététique et le bien-être selon les enseignements de l'Islam.
   
   Informations sur l'utilisateur:
   - Nom: ${userData.name || 'Utilisateur'}
   - Genre: ${userData.gender === 'female' ? 'Femme' : userData.gender === 'male' ? 'Homme' : 'Non spécifié'}
-  - Âge: ${userData.age || 'Non spécifié'}
+  - Âge: ${userData.age || 'Non spécifié'} ans
   - Poids: ${userData.weight || 'Non spécifié'} kg
   - Taille: ${userData.height || 'Non spécifié'} cm
   - Objectif: ${userData.goal === 'lose' ? 'Perdre du poids' : userData.goal === 'gain' ? 'Prendre du poids' : 'Maintenir le poids'}
-  - Préférences alimentaires: ${userData.preferences?.halal ? 'Halal' : ''} ${userData.preferences?.vegetarian ? ', Végétarien' : ''} ${userData.preferences?.vegan ? ', Végétalien' : ''}
+  - Préférences: ${userData.preferences?.halal ? 'Halal' : ''} ${userData.preferences?.vegetarian ? ', Végétarien' : ''} ${userData.preferences?.vegan ? ', Végétalien' : ''}
   - Allergies: ${userData.preferences?.allergies?.join(', ') || 'Aucune'}
   
-  Réponds toujours en français et de manière respectueuse. Utilise des sources islamiques fiables quand c'est pertinent. Focalise-toi sur les conseils nutritionnels halal adaptés à son profil.
-  
-  Si l'utilisateur a un objectif de perte de poids, mets l'accent sur les aliments sains recommandés dans l'Islam qui peuvent aider à perdre du poids.
-  Si l'utilisateur a un objectif de prise de poids, suggère des aliments nutritifs halal pour une prise de poids saine.`;
+  DIRECTIVES IMPORTANTES:
+  - Réponds TOUJOURS en français
+  - Reste dans le domaine de la nutrition, santé et bien-être islamique
+  - Utilise des références au Coran et à la Sunna quand approprié
+  - Sois bienveillant et respectueux des valeurs islamiques
+  - Adapte tes conseils au profil de l'utilisateur
+  - Suggère des aliments halal et des habitudes saines selon l'Islam
+  - Si on te pose des questions hors sujet, redirige poliment vers la nutrition/santé islamique`;
   
   const handleSelectSuggestion = (question: string) => {
     setMessage(question);
@@ -94,7 +113,7 @@ const AIChatbot = () => {
               role: 'system',
               content: systemMessage
             },
-            ...messages.map(msg => ({
+            ...messages.slice(-10).map(msg => ({
               role: msg.role,
               content: msg.content
             })),
@@ -105,6 +124,7 @@ const AIChatbot = () => {
           ],
           temperature: 0.7,
           max_tokens: 1000,
+          top_p: 0.9,
         }),
       });
       
@@ -120,43 +140,40 @@ const AIChatbot = () => {
       };
       
       setMessages(prev => [...prev, aiMessage]);
-      addPoints(5, "Interaction avec l'assistant nutritionnel");
+      addPoints(5, "Consultation assistant nutritionnel");
       setRetryCount(0);
       
-      // Si c'est la première interaction réussie
       if (messages.length === 1) {
-        // Attribuer un badge pour la première conversation
-        if (userData.gamification?.badges.some(b => b.id === 'nutrition-expert' && !b.isEarned)) {
-          addPoints(10, "Première consultation avec l'assistant nutritionnel");
-        }
+        addPoints(10, "Première consultation assistant IA");
+        toast.success("Félicitations !", {
+          description: "Première consultation avec l'assistant nutritionnel islamique !",
+        });
       }
       
     } catch (error) {
-      console.error('Erreur lors de la requête à Groq:', error);
+      console.error('Erreur GROQ API:', error);
       
-      // Logique de nouvelle tentative
       if (retryCount < 2) {
         setRetryCount(prev => prev + 1);
-        toast.error("Erreur de connexion", {
-          description: "Nouvelle tentative en cours...",
-          duration: 3000,
+        toast.error("Connexion en cours...", {
+          description: `Nouvelle tentative ${retryCount + 1}/3`,
+          duration: 2000,
         });
         
         setTimeout(() => {
           handleSubmit(e);
-        }, 2000);
+        }, 1500);
         return;
       }
       
-      toast.error("Erreur de connexion à l'assistant", {
-        description: "Veuillez réessayer plus tard.",
-        duration: 5000,
+      toast.error("Assistant temporairement indisponible", {
+        description: "Veuillez réessayer dans quelques instants",
+        duration: 4000,
       });
       
-      // Message d'erreur de repli
       const fallbackMessage: AIMessage = {
         role: 'assistant',
-        content: "Je suis désolé, je rencontre des difficultés à me connecter. Pourriez-vous réessayer plus tard? Entre-temps, n'oubliez pas de suivre les principes alimentaires halal et de maintenir une alimentation équilibrée selon la Sunna.",
+        content: "السلام عليكم، je rencontre des difficultés techniques temporaires. En attendant, rappelez-vous que selon la Sunna, il est recommandé de manger avec modération et de privilégier les aliments naturels et halal. Réessayez dans quelques instants, بإذن الله.",
         timestamp: new Date().toISOString()
       };
       
@@ -167,60 +184,83 @@ const AIChatbot = () => {
     }
   };
   
-  // Animation pour l'ouverture du chatbot
-  const chatbotClasses = `fixed inset-0 bg-black bg-opacity-30 z-50 transition-all duration-300 ${
+  // Styles adaptatifs pour mobile
+  const chatbotClasses = `fixed inset-0 bg-black/40 z-50 transition-all duration-300 ${
     isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
   }`;
   
-  const chatbotContentClasses = `fixed bottom-0 right-0 w-full sm:w-96 bg-white rounded-t-lg shadow-xl transform transition-transform duration-300 ${
+  const chatbotContentClasses = `fixed ${
+    isMobileOptimized 
+      ? 'bottom-0 left-0 right-0 w-full h-full'
+      : 'bottom-0 right-0 w-full sm:w-96 h-full sm:h-auto'
+  } bg-white ${isMobileOptimized ? '' : 'rounded-t-lg'} shadow-xl transform transition-transform duration-300 ${
     isOpen ? 'translate-y-0' : 'translate-y-full'
   }`;
   
   return (
     <>
-      {/* Bouton flottant pour ouvrir le chatbot */}
+      {/* Bouton flottant optimisé mobile */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-5 right-5 bg-islamic-green text-white rounded-full p-3 shadow-lg hover:bg-islamic-green-dark transition-colors z-50 animate-bounce"
+          className="fixed bottom-5 right-5 bg-islamic-green text-white rounded-full p-3 shadow-lg hover:bg-islamic-green-dark transition-all duration-300 z-50 animate-bounce hover:scale-110"
+          aria-label="Ouvrir l'assistant nutritionnel islamique"
         >
           <MessageCircle className="w-6 h-6" />
+          {isMobileOptimized && (
+            <Smartphone className="w-3 h-3 absolute -top-1 -right-1 bg-islamic-cream text-islamic-green rounded-full p-0.5" />
+          )}
         </button>
       )}
       
-      {/* Interface du chatbot */}
-      <div className={chatbotClasses}>
-        <div className={chatbotContentClasses}>
-          {/* En-tête */}
-          <div className="flex justify-between items-center p-3 bg-islamic-green text-white rounded-t-lg">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                <MessageCircle className="w-5 h-5 text-islamic-green" />
+      {/* Interface chatbot améliorée */}
+      <div className={chatbotClasses} onClick={() => setIsOpen(false)}>
+        <div className={chatbotContentClasses} onClick={(e) => e.stopPropagation()}>
+          {/* En-tête amélioré */}
+          <div className="flex justify-between items-center p-4 bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
+                <MessageCircle className="w-6 h-6 text-islamic-green" />
               </div>
               <div>
-                <h3 className="font-medium">Assistant Nutritionnel</h3>
-                <Badge className="bg-islamic-cream text-islamic-green text-xs">Halal & Sunna</Badge>
+                <h3 className="font-semibold text-lg">Assistant Nutrition Islamique</h3>
+                <div className="flex items-center space-x-2">
+                  <Badge className="bg-islamic-cream text-islamic-green text-xs">Halal & Sunna</Badge>
+                  {isMobileOptimized && <Badge className="bg-white/20 text-white text-xs">Mobile</Badge>}
+                </div>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="p-2 rounded-full hover:bg-islamic-green-dark">
-              <X className="w-5 h-5" />
+            <button 
+              onClick={() => setIsOpen(false)} 
+              className="p-2 rounded-full hover:bg-white/20 transition-colors"
+              aria-label="Fermer l'assistant"
+            >
+              <X className="w-6 h-6" />
             </button>
           </div>
           
-          {/* Messages */}
-          <div className="h-96 overflow-y-auto p-4 flex flex-col gap-3 bg-islamic-pattern bg-opacity-10">
+          {/* Zone publicitaire préparée */}
+          <div className="h-16 bg-gray-50 border-b flex items-center justify-center text-gray-400 text-sm">
+            {/* EMPLACEMENT GOOGLE ADS - BANNIÈRE HORIZONTALE */}
+            <div id="google-ads-banner" className="w-full h-full flex items-center justify-center">
+              <span>Espace publicitaire (Google Ads)</span>
+            </div>
+          </div>
+          
+          {/* Messages avec hauteur adaptative */}
+          <div className={`${isMobileOptimized ? 'h-full' : 'h-96'} overflow-y-auto p-4 flex flex-col gap-3 bg-islamic-pattern bg-opacity-5`}>
             {messages.length === 0 ? (
-              <div className="text-center text-gray-500 my-auto p-4 bg-white bg-opacity-80 rounded-lg shadow-sm">
-                <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-30 text-islamic-green" />
-                <p className="mb-4">Posez une question sur la nutrition halal ou demandez des conseils diététiques basés sur la Sunna.</p>
+              <div className="text-center text-gray-600 my-auto p-4 bg-white/90 rounded-lg shadow-sm">
+                <MessageCircle className="w-16 h-16 mx-auto mb-3 opacity-40 text-islamic-green" />
+                <p className="mb-4 font-medium">السلام عليكم ! Posez vos questions sur la nutrition halal et le bien-être selon l'Islam.</p>
                 
                 {showSuggestions && (
                   <div className="space-y-2 mt-4">
-                    <p className="font-medium text-islamic-green text-sm">Questions suggérées :</p>
+                    <p className="font-semibold text-islamic-green text-sm mb-3">Questions suggérées :</p>
                     {suggestedQuestions.map((q, i) => (
                       <div 
                         key={i} 
-                        className="text-left text-sm p-2 bg-islamic-cream rounded cursor-pointer hover:bg-islamic-cream/80 transition-colors"
+                        className="text-left text-sm p-3 bg-islamic-cream rounded-lg cursor-pointer hover:bg-islamic-cream/80 transition-colors border border-islamic-green/10"
                         onClick={() => handleSelectSuggestion(q)}
                       >
                         {q}
@@ -235,42 +275,53 @@ const AIChatbot = () => {
                   key={index}
                   className={`${
                     msg.role === 'user' 
-                      ? 'bg-islamic-cream self-end ml-12 border-islamic-green' 
-                      : 'bg-white self-start mr-12 border-gray-100'
-                  } rounded-lg p-3 max-w-[80%] border shadow-sm animate-fade-in`}
+                      ? 'bg-islamic-cream self-end ml-8 border-islamic-green/20' 
+                      : 'bg-white self-start mr-8 border-gray-200'
+                  } rounded-lg p-3 max-w-[85%] border shadow-sm animate-fade-in`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                  <span className="text-xs text-gray-500 mt-1 block">
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                  <span className="text-xs text-gray-500 mt-2 block">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
               ))
             )}
             {isLoading && (
-              <div className="bg-white self-start rounded-lg p-3 mr-12 border border-gray-100 shadow-sm animate-pulse-subtle">
-                <div className="flex items-center space-x-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-islamic-green" />
-                  <span className="text-sm text-islamic-green">En train d'écrire...</span>
+              <div className="bg-white self-start rounded-lg p-4 mr-8 border border-gray-200 shadow-sm">
+                <div className="flex items-center space-x-3">
+                  <Loader2 className="w-5 h-5 animate-spin text-islamic-green" />
+                  <span className="text-sm text-islamic-green font-medium">L'assistant réfléchit...</span>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
           
-          {/* Formulaire */}
-          <form onSubmit={handleSubmit} className="p-3 border-t flex gap-2 bg-white">
+          {/* Zone publicitaire mobile */}
+          {isMobileOptimized && (
+            <div className="h-12 bg-gray-50 border-t flex items-center justify-center text-gray-400 text-xs">
+              <div id="google-ads-mobile" className="w-full h-full flex items-center justify-center">
+                <span>Publicité mobile</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Formulaire amélioré */}
+          <form onSubmit={handleSubmit} className="p-4 border-t bg-white flex gap-3">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Posez votre question sur la nutrition halal..."
+              placeholder={isMobileOptimized ? "Votre question..." : "Posez votre question sur la nutrition halal..."}
               disabled={isLoading}
-              className="flex-1 border-islamic-green/30 focus-visible:ring-islamic-green"
+              className="flex-1 border-islamic-green/30 focus-visible:ring-islamic-green text-sm"
+              aria-label="Saisir une question sur la nutrition islamique"
             />
             <Button 
               type="submit" 
               size="icon" 
-              className="bg-islamic-green hover:bg-islamic-green-dark"
+              className="bg-islamic-green hover:bg-islamic-green-dark transition-colors"
               disabled={isLoading || !message.trim()}
+              aria-label="Envoyer la question"
             >
               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </Button>

@@ -12,80 +12,114 @@ const Navbar = () => {
   const isMobile = useIsMobile();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // Updated navigation items - added Mecca & Madina link
-  const navItems = [{
-    name: 'Accueil',
-    path: '/'
-  }, {
-    name: 'Calculateur',
-    path: '/calculateur'
-  }, {
-    name: 'Prières',
-    path: '/prieres'
-  }, {
-    name: 'Nutrition & Régime',
-    path: '/nutrition-regime'
-  }, {
-    name: 'Coran',
-    path: '/coran'
-  }, {
-    name: 'Ramadan',
-    path: '/ramadan'
-  }, {
-    name: 'Mecca & Madina',
-    path: '/mecca-madina'
-  }, {
-    name: 'Profil',
-    path: '/profil'
-  }];
+  // Navigation cohérente et organisée
+  const navItems = [
+    {
+      name: 'Accueil',
+      path: '/',
+      category: 'main'
+    },
+    {
+      name: 'Calculateur',
+      path: '/calculateur',
+      category: 'tools'
+    },
+    {
+      name: 'Prières',
+      path: '/prieres',
+      category: 'spiritual'
+    },
+    {
+      name: 'Nutrition & Régime',
+      path: '/nutrition-regime',
+      category: 'health'
+    },
+    {
+      name: 'Coran',
+      path: '/coran',
+      category: 'spiritual'
+    },
+    {
+      name: 'Ramadan',
+      path: '/ramadan',
+      category: 'spiritual'
+    },
+    {
+      name: 'Mecca & Madina',
+      path: '/mecca-madina',
+      category: 'spiritual'
+    },
+    {
+      name: 'Profil',
+      path: '/profil',
+      category: 'user'
+    }
+  ];
   
-  return <nav className="bg-white shadow-sm border-b border-islamic-green/10 sticky top-0 z-50">
+  return (
+    <nav className="bg-white shadow-sm border-b border-islamic-green/10 sticky top-0 z-40">
+      {/* Zone publicitaire en haut */}
+      <div className="w-full h-8 bg-gray-50 border-b flex items-center justify-center text-gray-400 text-xs">
+        <div id="google-ads-navbar" className="w-full h-full flex items-center justify-center">
+          <span>Publicité Google Ads</span>
+        </div>
+      </div>
+      
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Moon className="h-6 w-6 text-islamic-green" />
             <span className="font-bold text-islamic-green text-lg">Sanaa</span>
             <span className="text-lg text-fuchsia-500">Bien-être</span>
           </Link>
           
-          {/* Desktop navigation */}
-          <div className="hidden md:flex space-x-4">
+          {/* Navigation desktop améliorée */}
+          <div className="hidden md:flex space-x-1">
             {navItems.map(item => (
               <Link 
                 key={item.name} 
                 to={item.path} 
                 className={cn(
-                  "px-3 py-2 transition-colors",
+                  "px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium",
                   location.pathname === item.path
-                    ? "text-islamic-green font-medium"
-                    : "text-islamic-slate hover:text-islamic-green"
+                    ? "bg-islamic-green text-white shadow-sm"
+                    : "text-islamic-slate hover:text-islamic-green hover:bg-islamic-cream/50"
                 )}
               >
-                {item.name}
+                {isMobile ? item.name.split(' ')[0] : item.name}
               </Link>
             ))}
           </div>
           
-          {/* Mobile menu button */}
+          {/* Menu mobile optimisé */}
           <div className="md:hidden">
-            <Button variant="ghost" size="sm" className="text-islamic-slate" onClick={toggleMenu}>
-              {isMenuOpen ? <X /> : <Menu />}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-islamic-slate hover:bg-islamic-cream" 
+              onClick={toggleMenu}
+              aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            >
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
         
-        {/* Mobile navigation */}
-        <div className={cn("md:hidden transition-all duration-300 ease-in-out overflow-hidden", isMenuOpen ? "max-h-64 py-2" : "max-h-0")}>
-          <div className="flex flex-col space-y-2">
+        {/* Navigation mobile améliorée */}
+        <div className={cn(
+          "md:hidden transition-all duration-300 ease-in-out overflow-hidden",
+          isMenuOpen ? "max-h-80 py-4" : "max-h-0"
+        )}>
+          <div className="grid grid-cols-2 gap-2">
             {navItems.map(item => (
               <Link 
                 key={item.name} 
                 to={item.path} 
                 className={cn(
-                  "px-3 py-2 rounded-md transition-colors",
+                  "px-3 py-3 rounded-md transition-all text-sm font-medium text-center",
                   location.pathname === item.path
-                    ? "bg-islamic-cream text-islamic-green font-medium"
-                    : "hover:bg-islamic-cream"
+                    ? "bg-islamic-green text-white shadow-sm"
+                    : "bg-islamic-cream/50 text-islamic-slate hover:bg-islamic-cream"
                 )}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -95,7 +129,8 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </nav>;
+    </nav>
+  );
 };
 
 export default Navbar;
