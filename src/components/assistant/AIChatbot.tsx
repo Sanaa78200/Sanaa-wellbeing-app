@@ -1,135 +1,110 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { AIMessage } from '@/components/nutrition/types';
+import { MessageCircle, Smartphone, X } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
-import { MessageCircle, Smartphone } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
-import ChatHeader from './ChatHeader';
-import MessageList from './MessageList';
-import ChatForm from './ChatForm';
-import { useAIChat } from './hooks/useAIChat';
-import { useChatMessages } from './hooks/useChatMessages';
-import { useMobileDetection } from './hooks/useMobileDetection';
+import { AIMessage } from '@/components/nutrition/types';
+import ChatWindow from './ChatWindow';
+import { useChat } from './hooks/useChat';
 
 const AIChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { userData, addPoints } = useUser();
   
-  const { isLoading, sendMessage } = useAIChat();
-  const { isMobileOptimized } = useMobileDetection();
   const {
     messages,
-    editingMessageId,
-    editText,
-    addMessage,
-    resetConversation,
+    message,
+    isLoading,
+    setMessage,
+    sendMessage,
+    clearMessages,
     deleteMessage,
-    startEditMessage,
-    saveEditMessage,
-    cancelEdit,
-    setEditText
-  } = useChatMessages();
-  
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-  
+    editMessage
+  } = useChat();
+
   useEffect(() => {
-    scrollToBottom();
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages, isOpen]);
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+
+  const handleSendMessage = async () => {
     if (!message.trim()) {
       toast.error("Veuillez saisir votre question");
       return;
     }
-    
-    const userMessage: AIMessage = {
-      role: 'user',
-      content: message,
-      timestamp: new Date().toISOString()
-    };
-    
-    addMessage(userMessage);
-    const currentMessage = message;
-    setMessage('');
-    
-    await sendMessage(currentMessage, messages, userData, (aiMessage) => {
-      addMessage(aiMessage);
+
+    try {
+      const isFirstMessage = messages.length === 0;
+      await sendMessage(message, userData);
+      
       addPoints(5, "Consultation assistant nutritionnel");
       
-      if (messages.length === 0) {
+      if (isFirstMessage) {
         addPoints(10, "Première consultation assistant IA");
         toast.success("Félicitations ! Première consultation réussie !");
       }
-    });
+    } catch (error) {
+      console.error('Erreur envoi message:', error);
+      toast.error("Erreur lors de l'envoi du message");
+    }
   };
-  
-  const chatbotClasses = `fixed inset-0 bg-black/40 z-50 transition-all duration-300 ${
-    isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-  }`;
-  
-  const chatbotContentClasses = `fixed ${
-    isMobileOptimized 
+
+  const handleReset = () => {
+    clearMessages();
+    toast.success("Conversation réinitialisée");
+  };
+
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 bg-islamic-green text-white rounded-full p-4 shadow-lg hover:bg-islamic-green-dark transition-all duration-300 z-50 hover:scale-110"
+        aria-label="Ouvrir l'assistant nutritionnel islamique"
+      >
+        <MessageCircle className="w-6 h-6" />
+        {isMobile && (
+          <Smartphone className="w-3 h-3 absolute -top-1 -right-1 bg-islamic-cream text-islamic-green rounded-full p-0.5" />
+        )}
+      </button>
+    );
+  }
+
+  const chatClasses = `fixed inset-0 bg-black/40 z-50 transition-all duration-300`;
+  const windowClasses = `fixed ${
+    isMobile 
       ? 'bottom-0 left-0 right-0 w-full h-full'
       : 'bottom-4 right-4 w-96 h-[600px]'
-  } bg-white ${isMobileOptimized ? '' : 'rounded-lg'} shadow-xl transform transition-transform duration-300 ${
-    isOpen ? 'translate-y-0' : 'translate-y-full'
-  }`;
-  
+  } bg-white ${isMobile ? '' : 'rounded-lg'} shadow-xl transform transition-transform duration-300`;
+
   return (
-    <>
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-islamic-green text-white rounded-full p-4 shadow-lg hover:bg-islamic-green-dark transition-all duration-300 z-50 hover:scale-110"
-          aria-label="Ouvrir l'assistant nutritionnel islamique"
-        >
-          <MessageCircle className="w-6 h-6" />
-          {isMobileOptimized && (
-            <Smartphone className="w-3 h-3 absolute -top-1 -right-1 bg-islamic-cream text-islamic-green rounded-full p-0.5" />
-          )}
-        </button>
-      )}
-      
-      <div className={chatbotClasses} onClick={() => setIsOpen(false)}>
-        <div className={chatbotContentClasses} onClick={(e) => e.stopPropagation()}>
-          <ChatHeader
-            userName={userData.name}
-            isMobileOptimized={isMobileOptimized}
-            onClose={() => setIsOpen(false)}
-            onReset={resetConversation}
-          />
-          
-          <MessageList
-            messages={messages}
-            isLoading={isLoading}
-            isMobileOptimized={isMobileOptimized}
-            userName={userData.name}
-            editingMessageId={editingMessageId}
-            editText={editText}
-            onStartEdit={startEditMessage}
-            onSaveEdit={saveEditMessage}
-            onCancelEdit={cancelEdit}
-            onDeleteMessage={deleteMessage}
-            onEditTextChange={setEditText}
-            messagesEndRef={messagesEndRef}
-          />
-          
-          <ChatForm
-            message={message}
-            isLoading={isLoading}
-            isMobileOptimized={isMobileOptimized}
-            onMessageChange={setMessage}
-            onSubmit={handleSubmit}
-          />
-        </div>
+    <div className={chatClasses} onClick={() => setIsOpen(false)}>
+      <div className={windowClasses} onClick={(e) => e.stopPropagation()}>
+        <ChatWindow
+          messages={messages}
+          message={message}
+          isLoading={isLoading}
+          isMobile={isMobile}
+          userName={userData.name}
+          messagesEndRef={messagesEndRef}
+          onMessageChange={setMessage}
+          onSendMessage={handleSendMessage}
+          onClose={() => setIsOpen(false)}
+          onReset={handleReset}
+          onDeleteMessage={deleteMessage}
+          onEditMessage={editMessage}
+        />
       </div>
-    </>
+    </div>
   );
 };
 
