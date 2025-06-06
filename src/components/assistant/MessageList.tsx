@@ -8,12 +8,9 @@ interface MessageListProps {
   messages: AIMessage[];
   isLoading: boolean;
   isMobileOptimized: boolean;
-  showSuggestions: boolean;
   userName?: string;
-  suggestedQuestions: string[];
   editingMessageId: number | null;
   editText: string;
-  onSelectSuggestion: (question: string) => void;
   onStartEdit: (index: number, content: string) => void;
   onSaveEdit: (index: number) => void;
   onCancelEdit: () => void;
@@ -26,12 +23,9 @@ const MessageList: React.FC<MessageListProps> = ({
   messages,
   isLoading,
   isMobileOptimized,
-  showSuggestions,
   userName,
-  suggestedQuestions,
   editingMessageId,
   editText,
-  onSelectSuggestion,
   onStartEdit,
   onSaveEdit,
   onCancelEdit,
@@ -45,21 +39,6 @@ const MessageList: React.FC<MessageListProps> = ({
         <div className="text-center text-gray-600 my-auto p-4 bg-white/90 rounded-lg shadow-sm">
           <MessageCircle className="w-16 h-16 mx-auto mb-3 opacity-40 text-islamic-green" />
           <p className="mb-4 font-medium">السلام عليكم {userName || ''} ! Posez vos questions sur la nutrition halal et le bien-être selon l'Islam.</p>
-          
-          {showSuggestions && (
-            <div className="space-y-2 mt-4">
-              <p className="font-semibold text-islamic-green text-sm mb-3">Questions suggérées :</p>
-              {suggestedQuestions.map((q, i) => (
-                <div 
-                  key={i} 
-                  className="text-left text-sm p-3 bg-islamic-cream rounded-lg cursor-pointer hover:bg-islamic-cream/80 transition-colors border border-islamic-green/10"
-                  onClick={() => onSelectSuggestion(q)}
-                >
-                  {q}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       ) : (
         messages.map((msg, index) => (

@@ -10,7 +10,6 @@ import ChatForm from './ChatForm';
 import { useAIChat } from './hooks/useAIChat';
 import { useChatMessages } from './hooks/useChatMessages';
 import { useMobileDetection } from './hooks/useMobileDetection';
-import { useSuggestedQuestions } from './hooks/useSuggestedQuestions';
 
 const AIChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +31,6 @@ const AIChatbot = () => {
     cancelEdit,
     setEditText
   } = useChatMessages();
-  const { suggestedQuestions, showSuggestions } = useSuggestedQuestions(messages.length);
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,10 +39,6 @@ const AIChatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isOpen]);
-  
-  const handleSelectSuggestion = (question: string) => {
-    setMessage(question);
-  };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,12 +109,9 @@ const AIChatbot = () => {
             messages={messages}
             isLoading={isLoading}
             isMobileOptimized={isMobileOptimized}
-            showSuggestions={showSuggestions}
             userName={userData.name}
-            suggestedQuestions={suggestedQuestions}
             editingMessageId={editingMessageId}
             editText={editText}
-            onSelectSuggestion={handleSelectSuggestion}
             onStartEdit={startEditMessage}
             onSaveEdit={saveEditMessage}
             onCancelEdit={cancelEdit}
