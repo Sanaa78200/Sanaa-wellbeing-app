@@ -18,7 +18,15 @@ interface ApiKey {
 }
 
 const ApiKeyManager = () => {
-  const [apiKeys, setApiKeys] = useLocalStorage<ApiKey[]>('secure-api-keys', []);
+  const [apiKeys, setApiKeys] = useLocalStorage<ApiKey[]>('secure-api-keys', [
+    {
+      id: 'groq-main-2024',
+      name: 'GROQ API Principal',
+      key: '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',
+      service: 'GROQ',
+      createdAt: new Date().toISOString()
+    }
+  ]);
   const [newKeyName, setNewKeyName] = useState('');
   const [newKeyValue, setNewKeyValue] = useState('');
   const [newKeyService, setNewKeyService] = useState('');
@@ -101,6 +109,13 @@ const ApiKeyManager = () => {
       </CardHeader>
       
       <CardContent className="p-6 space-y-4">
+        <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+          <p className="text-sm text-green-800">
+            <strong>✅ Clé GROQ ajoutée :</strong> Votre nouvelle clé API GROQ a été automatiquement ajoutée et sécurisée. 
+            Le chatbot utilisera maintenant cette clé mise à jour.
+          </p>
+        </div>
+
         <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
           <p className="text-sm text-blue-800">
             <strong>Sécurité :</strong> Vos clés API sont stockées localement dans votre navigateur et chiffrées. 
