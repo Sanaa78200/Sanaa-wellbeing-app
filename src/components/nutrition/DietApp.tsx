@@ -4,6 +4,7 @@ import UserProfile from './UserProfile';
 import NutritionStats from './NutritionStats';
 import AddMealForm from './AddMealForm';
 import MealList from './MealList';
+import NutritionSync from './NutritionSync';
 import { Meal, UserData, DailyGoal } from './types';
 import { useUser } from '@/context/UserContext';
 import { toast } from '@/components/ui/sonner';
@@ -103,7 +104,8 @@ const DietApp = () => {
   // Ajouter un nouveau repas
   const addMeal = (e: React.FormEvent) => {
     e.preventDefault();
-    setMeals([...meals, newMeal]);
+    const updatedMeals = [...meals, newMeal];
+    setMeals(updatedMeals);
     setNewMeal({
       name: '',
       calories: '',
@@ -158,6 +160,8 @@ const DietApp = () => {
   return (
     <div className="islamic-border p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold text-islamic-green-dark mb-8 text-center">Mon Suivi Nutritionnel</h1>
+      
+      <NutritionSync meals={meals} onMealsUpdate={setMeals} />
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <UserProfile 

@@ -1,15 +1,16 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { AIMessage } from '@/components/nutrition/types';
 import { useUser } from '@/context/UserContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Send, MessageCircle, X, Smartphone } from 'lucide-react';
+import { Loader2, Send, MessageCircle, X, Smartphone, RotateCcw, Edit3, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 // Clé API GROQ mise à jour
-const GROQ_API_KEY = "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";
+const GROQ_API_KEY = "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";
 
 // Questions suggérées optimisées pour mobile
 const suggestedQuestions = [
@@ -28,6 +29,8 @@ const AIChatbot = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [isMobileOptimized, setIsMobileOptimized] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+  const [editText, setEditText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { userData, addPoints } = useUser();
   
@@ -56,6 +59,48 @@ const AIChatbot = () => {
       setShowSuggestions(false);
     }
   }, [messages.length]);
+
+  // Réinitialiser la conversation
+  const resetConversation = () => {
+    setMessages([]);
+    setShowSuggestions(true);
+    setEditingMessageId(null);
+    toast.success("Conversation réinitialisée", {
+      description: "Nouvelle conversation démarrée"
+    });
+  };
+
+  // Supprimer un message
+  const deleteMessage = (index: number) => {
+    const updatedMessages = messages.filter((_, i) => i !== index);
+    setMessages(updatedMessages);
+    toast.success("Message supprimé");
+  };
+
+  // Modifier un message
+  const startEditMessage = (index: number, content: string) => {
+    setEditingMessageId(index);
+    setEditText(content);
+  };
+
+  const saveEditMessage = (index: number) => {
+    const updatedMessages = [...messages];
+    updatedMessages[index] = {
+      ...updatedMessages[index],
+      content: editText,
+      timestamp: new Date().toISOString(),
+      edited: true
+    };
+    setMessages(updatedMessages);
+    setEditingMessageId(null);
+    setEditText('');
+    toast.success("Message modifié");
+  };
+
+  const cancelEdit = () => {
+    setEditingMessageId(null);
+    setEditText('');
+  };
   
   // Système de prompts amélioré avec données utilisateur en temps réel
   const getSystemMessage = () => {
@@ -237,7 +282,7 @@ const AIChatbot = () => {
       {/* Interface chatbot améliorée */}
       <div className={chatbotClasses} onClick={() => setIsOpen(false)}>
         <div className={chatbotContentClasses} onClick={(e) => e.stopPropagation()}>
-          {/* En-tête amélioré */}
+          {/* En-tête amélioré avec boutons d'action */}
           <div className="flex justify-between items-center p-4 bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
@@ -251,13 +296,23 @@ const AIChatbot = () => {
                 </div>
               </div>
             </div>
-            <button 
-              onClick={() => setIsOpen(false)} 
-              className="p-2 rounded-full hover:bg-white/20 transition-colors"
-              aria-label="Fermer l'assistant"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={resetConversation}
+                className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                aria-label="Réinitialiser la conversation"
+                title="Nouvelle conversation"
+              >
+                <RotateCcw className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => setIsOpen(false)} 
+                className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                aria-label="Fermer l'assistant"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
           </div>
           
           {/* Zone publicitaire préparée */}
@@ -297,12 +352,54 @@ const AIChatbot = () => {
                     msg.role === 'user' 
                       ? 'bg-islamic-cream self-end ml-8 border-islamic-green/20' 
                       : 'bg-white self-start mr-8 border-gray-200'
-                  } rounded-lg p-3 max-w-[85%] border shadow-sm animate-fade-in`}
+                  } rounded-lg p-3 max-w-[85%] border shadow-sm animate-fade-in group relative`}
                 >
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                  <span className="text-xs text-gray-500 mt-2 block">
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+                  {editingMessageId === index ? (
+                    <div className="space-y-2">
+                      <textarea
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        className="w-full p-2 border rounded text-sm resize-none"
+                        rows={3}
+                      />
+                      <div className="flex space-x-2">
+                        <Button size="sm" onClick={() => saveEditMessage(index)}>
+                          Sauvegarder
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={cancelEdit}>
+                          Annuler
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-xs text-gray-500">
+                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {msg.edited && <span className="ml-1 text-islamic-green">(modifié)</span>}
+                        </span>
+                        {msg.role === 'user' && (
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                            <button
+                              onClick={() => startEditMessage(index, msg.content)}
+                              className="p-1 text-gray-400 hover:text-islamic-green"
+                              title="Modifier"
+                            >
+                              <Edit3 className="w-3 h-3" />
+                            </button>
+                            <button
+                              onClick={() => deleteMessage(index)}
+                              className="p-1 text-gray-400 hover:text-red-500"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
               ))
             )}
