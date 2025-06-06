@@ -14,33 +14,33 @@ const MeccaMadinaLive = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const isMobile = useIsMobile();
   
-  // Sources multiples pour fiabilité
+  // Sources mises à jour avec la nouvelle URL fournie
   const meccaSources = [
     {
-      url: "https://www.youtube.com/embed/y4_c6NIl8XA?autoplay=1&mute=1&rel=0&modestbranding=1",
-      name: "Mecca Live HD - Source principale"
+      url: "https://www.youtube.com/embed/jY--Ad8r7bU?autoplay=1&mute=1&rel=0&modestbranding=1",
+      name: "Mecca Live HD - Source YouTube principale"
     },
     {
-      url: "https://www.youtube.com/embed/XfIVFU77Z9w?autoplay=1&mute=1&rel=0&modestbranding=1",
+      url: "https://www.youtube.com/embed/y4_c6NIl8XA?autoplay=1&mute=1&rel=0&modestbranding=1",
       name: "Mecca Live - Source alternative"
     },
     {
-      url: "https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1&rel=0&modestbranding=1",
+      url: "https://www.youtube.com/embed/XfIVFU77Z9w?autoplay=1&mute=1&rel=0&modestbranding=1",
       name: "Mecca Live - Source de secours"
     }
   ];
   
   const madinaSources = [
     {
-      url: "https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1&rel=0&modestbranding=1",
+      url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
       name: "Madina Live HD - Source principale"
     },
     {
-      url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
+      url: "https://www.youtube.com/embed/2Yw3JGhzIpk?autoplay=1&mute=1&rel=0&modestbranding=1",
       name: "Madina Live - Source alternative"
     },
     {
-      url: "https://www.youtube.com/embed/2Yw3JGhzIpk?autoplay=1&mute=1&rel=0&modestbranding=1",
+      url: "https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1&rel=0&modestbranding=1",
       name: "Madina Live - Source de secours"
     }
   ];
@@ -70,7 +70,6 @@ const MeccaMadinaLive = () => {
   // Optimisation mobile avec détection automatique
   useEffect(() => {
     if (isMobile) {
-      // Désactiver l'autoplay sur mobile pour économiser la bande passante
       setIsPlaying(false);
       toast.info("Mode mobile activé - Appuyez sur lecture pour démarrer");
     }
@@ -102,7 +101,7 @@ const MeccaMadinaLive = () => {
           <Card className="overflow-hidden">
             <CardContent className="p-0">
               <div className="h-20 bg-gradient-to-r from-gray-50 to-gray-100 flex items-center justify-center border-b">
-                <div id="google-ads-main" className="w-full h-full flex items-center justify-center text-gray-400">
+                <div id="google-ads-mecca-main" className="w-full h-full flex items-center justify-center text-gray-400">
                   <span>Zone publicitaire principale - Google Ads</span>
                 </div>
               </div>
@@ -202,7 +201,6 @@ const MeccaMadinaLive = () => {
                     src={`${madinaSources[currentMadinaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
                     title="Madina Live Stream"
                     className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
                 </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { AIMessage } from '@/components/nutrition/types';
 import { useUser } from '@/context/UserContext';
@@ -9,8 +8,8 @@ import { Loader2, Send, MessageCircle, X, Smartphone } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
-// Nouvelle clé API GROQ mise à jour
-const GROQ_API_KEY = "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";
+// Clé API GROQ mise à jour
+const GROQ_API_KEY = "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";
 
 // Questions suggérées optimisées pour mobile
 const suggestedQuestions = [
@@ -58,27 +57,37 @@ const AIChatbot = () => {
     }
   }, [messages.length]);
   
-  // Système de prompts amélioré et plus cohérent
-  const systemMessage = `Tu es un assistant IA islamique spécialisé dans la nutrition halal, la diététique et le bien-être selon les enseignements de l'Islam.
-  
-  Informations sur l'utilisateur:
-  - Nom: ${userData.name || 'Utilisateur'}
-  - Genre: ${userData.gender === 'female' ? 'Femme' : userData.gender === 'male' ? 'Homme' : 'Non spécifié'}
-  - Âge: ${userData.age || 'Non spécifié'} ans
-  - Poids: ${userData.weight || 'Non spécifié'} kg
-  - Taille: ${userData.height || 'Non spécifié'} cm
-  - Objectif: ${userData.goal === 'lose' ? 'Perdre du poids' : userData.goal === 'gain' ? 'Prendre du poids' : 'Maintenir le poids'}
-  - Préférences: ${userData.preferences?.halal ? 'Halal' : ''} ${userData.preferences?.vegetarian ? ', Végétarien' : ''} ${userData.preferences?.vegan ? ', Végétalien' : ''}
-  - Allergies: ${userData.preferences?.allergies?.join(', ') || 'Aucune'}
-  
-  DIRECTIVES IMPORTANTES:
-  - Réponds TOUJOURS en français
-  - Reste dans le domaine de la nutrition, santé et bien-être islamique
-  - Utilise des références au Coran et à la Sunna quand approprié
-  - Sois bienveillant et respectueux des valeurs islamiques
-  - Adapte tes conseils au profil de l'utilisateur
-  - Suggère des aliments halal et des habitudes saines selon l'Islam
-  - Si on te pose des questions hors sujet, redirige poliment vers la nutrition/santé islamique`;
+  // Système de prompts amélioré avec données utilisateur en temps réel
+  const getSystemMessage = () => {
+    const userInfo = `
+    Informations utilisateur (mises à jour en temps réel):
+    - Nom: ${userData.name || 'Utilisateur'}
+    - Genre: ${userData.gender === 'female' ? 'Femme' : userData.gender === 'male' ? 'Homme' : 'Non spécifié'}
+    - Âge: ${userData.age || 'Non spécifié'} ans
+    - Poids: ${userData.weight || 'Non spécifié'} kg
+    - Taille: ${userData.height || 'Non spécifié'} cm
+    - Objectif: ${userData.goal === 'lose' ? 'Perdre du poids' : userData.goal === 'gain' ? 'Prendre du poids' : 'Maintenir le poids'}
+    - Préférences: ${userData.preferences?.halal ? 'Halal' : ''} ${userData.preferences?.vegetarian ? ', Végétarien' : ''} ${userData.preferences?.vegan ? ', Végétalien' : ''}
+    - Allergies: ${userData.preferences?.allergies?.join(', ') || 'Aucune'}
+    - Points de gamification: ${userData.gamification?.points || 0}
+    - Niveau: ${userData.gamification?.level || 1}
+    - Streak: ${userData.gamification?.streak || 0} jours
+    `;
+
+    return `Tu es un assistant IA islamique spécialisé dans la nutrition halal, la diététique et le bien-être selon les enseignements de l'Islam.
+    
+    ${userInfo}
+    
+    DIRECTIVES IMPORTANTES:
+    - Réponds TOUJOURS en français
+    - Reste dans le domaine de la nutrition, santé et bien-être islamique
+    - Utilise des références au Coran et à la Sunna quand approprié
+    - Sois bienveillant et respectueux des valeurs islamiques
+    - Adapte tes conseils au profil de l'utilisateur mis à jour en temps réel
+    - Suggère des aliments halal et des habitudes saines selon l'Islam
+    - Si on te pose des questions hors sujet, redirige poliment vers la nutrition/santé islamique
+    - Prends en compte les données de gamification pour encourager l'utilisateur`;
+  };
   
   const handleSelectSuggestion = (question: string) => {
     setMessage(question);
@@ -100,6 +109,8 @@ const AIChatbot = () => {
     setIsLoading(true);
     
     try {
+      console.log('Envoi de la requête à GROQ API...');
+      
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -107,13 +118,13 @@ const AIChatbot = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-chat',
+          model: 'llama-3.1-8b-instant',
           messages: [
             {
               role: 'system',
-              content: systemMessage
+              content: getSystemMessage()
             },
-            ...messages.slice(-10).map(msg => ({
+            ...messages.slice(-8).map(msg => ({
               role: msg.role,
               content: msg.content
             })),
@@ -123,16 +134,26 @@ const AIChatbot = () => {
             }
           ],
           temperature: 0.7,
-          max_tokens: 1000,
+          max_tokens: 800,
           top_p: 0.9,
         }),
       });
       
+      console.log('Statut de la réponse:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`Erreur API: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Erreur API:', response.status, errorText);
+        throw new Error(`Erreur API: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
+      console.log('Réponse reçue de GROQ:', data);
+      
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Format de réponse invalide');
+      }
+      
       const aiMessage: AIMessage = {
         role: 'assistant',
         content: data.choices[0].message.content,
@@ -151,7 +172,7 @@ const AIChatbot = () => {
       }
       
     } catch (error) {
-      console.error('Erreur GROQ API:', error);
+      console.error('Erreur complète:', error);
       
       if (retryCount < 2) {
         setRetryCount(prev => prev + 1);
@@ -162,12 +183,12 @@ const AIChatbot = () => {
         
         setTimeout(() => {
           handleSubmit(e);
-        }, 1500);
+        }, 2000);
         return;
       }
       
       toast.error("Assistant temporairement indisponible", {
-        description: "Veuillez réessayer dans quelques instants",
+        description: "Vérifiez votre connexion internet et réessayez",
         duration: 4000,
       });
       
@@ -241,7 +262,6 @@ const AIChatbot = () => {
           
           {/* Zone publicitaire préparée */}
           <div className="h-16 bg-gray-50 border-b flex items-center justify-center text-gray-400 text-sm">
-            {/* EMPLACEMENT GOOGLE ADS - BANNIÈRE HORIZONTALE */}
             <div id="google-ads-banner" className="w-full h-full flex items-center justify-center">
               <span>Espace publicitaire (Google Ads)</span>
             </div>
@@ -252,7 +272,7 @@ const AIChatbot = () => {
             {messages.length === 0 ? (
               <div className="text-center text-gray-600 my-auto p-4 bg-white/90 rounded-lg shadow-sm">
                 <MessageCircle className="w-16 h-16 mx-auto mb-3 opacity-40 text-islamic-green" />
-                <p className="mb-4 font-medium">السلام عليكم ! Posez vos questions sur la nutrition halal et le bien-être selon l'Islam.</p>
+                <p className="mb-4 font-medium">السلام عليكم {userData.name || ''} ! Posez vos questions sur la nutrition halal et le bien-être selon l'Islam.</p>
                 
                 {showSuggestions && (
                   <div className="space-y-2 mt-4">
