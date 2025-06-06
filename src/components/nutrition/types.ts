@@ -29,7 +29,7 @@ export interface Challenge {
   points: number;
   progress?: number;
   goal?: number;
-  completed?: boolean;
+  isCompleted?: boolean;
   type: 'daily' | 'weekly' | 'monthly';
 }
 

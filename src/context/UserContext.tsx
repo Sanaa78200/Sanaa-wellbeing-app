@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { UserData, GamificationData, Badge, Challenge } from '@/components/nutrition/types';
@@ -52,14 +51,16 @@ const dailyChallenges: Challenge[] = [
     points: 20,
     isCompleted: false,
     goal: 8,
-    progress: 0
+    progress: 0,
+    type: 'daily'
   },
   {
     id: 'daily-protein',
     name: 'Protéines équilibrées',
     description: 'Atteindre 100% de votre objectif de protéines',
     points: 15,
-    isCompleted: false
+    isCompleted: false,
+    type: 'daily'
   },
   {
     id: 'daily-steps',
@@ -68,7 +69,8 @@ const dailyChallenges: Challenge[] = [
     points: 25,
     isCompleted: false,
     goal: 5000,
-    progress: 0
+    progress: 0,
+    type: 'daily'
   }
 ];
 
@@ -79,7 +81,8 @@ const defaultGamification: GamificationData = {
   streak: 0,
   lastActiveDate: new Date().toISOString().split('T')[0],
   badges: availableBadges,
-  challenges: dailyChallenges
+  challenges: dailyChallenges,
+  achievements: []
 };
 
 // Données utilisateur par défaut
