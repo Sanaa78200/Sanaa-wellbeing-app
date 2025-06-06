@@ -38,7 +38,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     <div className="flex flex-col h-full">
       <ChatHeader
         userName={userName}
-        isMobile={isMobile}
+        isMobileOptimized={isMobile}
         onClose={onClose}
         onReset={onReset}
       />
