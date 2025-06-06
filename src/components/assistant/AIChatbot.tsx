@@ -9,8 +9,8 @@ import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import ChatForm from './ChatForm';
 
-// Clé API GROQ mise à jour
-const GROQ_API_KEY = "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";
+// Nouvelle clé API GROQ mise à jour
+const GROQ_API_KEY = "gsk_Y8qGXnZ4KrFwJ9PvH2mLWGdyb3FYeKpN7QsRt5AcB8xD1fE0vW6uI9oT3hM2jL";
 
 // Questions suggérées optimisées pour mobile
 const suggestedQuestions = [
@@ -65,6 +65,7 @@ const AIChatbot = () => {
     setMessages([]);
     setShowSuggestions(true);
     setEditingMessageId(null);
+    setRetryCount(0);
     toast.success("Conversation réinitialisée", {
       description: "Nouvelle conversation démarrée"
     });
@@ -155,6 +156,7 @@ const AIChatbot = () => {
     
     try {
       console.log('Envoi de la requête à GROQ API...');
+      console.log('Message:', message);
       
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -163,7 +165,7 @@ const AIChatbot = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
+          model: 'llama3-8b-8192',
           messages: [
             {
               role: 'system',
@@ -179,7 +181,7 @@ const AIChatbot = () => {
             }
           ],
           temperature: 0.7,
-          max_tokens: 800,
+          max_tokens: 1000,
           top_p: 0.9,
         }),
       });
@@ -289,13 +291,6 @@ const AIChatbot = () => {
             onReset={resetConversation}
           />
           
-          {/* Zone publicitaire préparée */}
-          <div className="h-16 bg-gray-50 border-b flex items-center justify-center text-gray-400 text-sm">
-            <div id="google-ads-banner" className="w-full h-full flex items-center justify-center">
-              <span>Espace publicitaire (Google Ads)</span>
-            </div>
-          </div>
-          
           <MessageList
             messages={messages}
             isLoading={isLoading}
@@ -313,15 +308,6 @@ const AIChatbot = () => {
             onEditTextChange={setEditText}
             messagesEndRef={messagesEndRef}
           />
-          
-          {/* Zone publicitaire mobile */}
-          {isMobileOptimized && (
-            <div className="h-12 bg-gray-50 border-t flex items-center justify-center text-gray-400 text-xs">
-              <div id="google-ads-mobile" className="w-full h-full flex items-center justify-center">
-                <span>Publicité mobile</span>
-              </div>
-            </div>
-          )}
           
           <ChatForm
             message={message}

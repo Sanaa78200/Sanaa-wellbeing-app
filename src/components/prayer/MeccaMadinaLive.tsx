@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,7 @@ const MeccaMadinaLive = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const isMobile = useIsMobile();
   
-  // Sources mises à jour avec la nouvelle URL fournie
+  // Sources mises à jour avec les nouvelles URLs
   const meccaSources = [
     {
       url: "https://www.youtube.com/embed/jY--Ad8r7bU?autoplay=1&mute=1&rel=0&modestbranding=1",
@@ -30,17 +29,18 @@ const MeccaMadinaLive = () => {
     }
   ];
   
+  // Nouvelle source pour Médina mise à jour
   const madinaSources = [
     {
-      url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
-      name: "Madina Live HD - Source principale"
+      url: "https://www.youtube.com/embed/-jWCvRuC254?autoplay=1&mute=1&rel=0&modestbranding=1",
+      name: "Madina Live HD - Nouvelle source principale"
     },
     {
-      url: "https://www.youtube.com/embed/2Yw3JGhzIpk?autoplay=1&mute=1&rel=0&modestbranding=1",
+      url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
       name: "Madina Live - Source alternative"
     },
     {
-      url: "https://www.youtube.com/embed/Fqg1zfRcwZY?autoplay=1&mute=1&rel=0&modestbranding=1",
+      url: "https://www.youtube.com/embed/2Yw3JGhzIpk?autoplay=1&mute=1&rel=0&modestbranding=1",
       name: "Madina Live - Source de secours"
     }
   ];
@@ -181,7 +181,7 @@ const MeccaMadinaLive = () => {
             </CardContent>
           </Card>
           
-          {/* Madina Live */}
+          {/* Madina Live - mise à jour avec nouvelle source */}
           <Card className="overflow-hidden shadow-lg">
             <CardHeader className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
               <CardTitle className="flex items-center justify-between">
