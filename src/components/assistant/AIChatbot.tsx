@@ -31,13 +31,24 @@ const AIChatbot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { userData, addPoints } = useUser();
   
-  // Fonction pour récupérer la clé API sécurisée
+  // Récupération de la clé API sécurisée depuis le localStorage
   const getApiKey = () => {
-    if (typeof window !== 'undefined' && (window as any).getSecureApiKey) {
-      return (window as any).getSecureApiKey('GROQ') || (window as any).getSecureApiKey('groq');
+    try {
+      const storedKeys = localStorage.getItem('secure-api-keys');
+      if (storedKeys) {
+        const keys = JSON.parse(storedKeys);
+        const groqKey = keys.find((k: any) => k.service.toLowerCase() === 'groq');
+        if (groqKey) {
+          console.log('Clé API GROQ trouvée');
+          return groqKey.key;
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de la clé API:', error);
     }
-    // Fallback sur l'ancienne clé pour la compatibilité
-    return "gsk_Y8qGXnZ4KrFwJ9PvH2mLWGdyb3FYeKpN7QsRt5AcB8xD1fE0vW6uI9oT3hM2jL";
+    
+    console.log('Utilisation de la clé API par défaut');
+    return "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";
   };
   
   // Détection mobile améliorée
@@ -72,9 +83,7 @@ const AIChatbot = () => {
     setShowSuggestions(true);
     setEditingMessageId(null);
     setRetryCount(0);
-    toast.success("Conversation réinitialisée", {
-      description: "Nouvelle conversation démarrée"
-    });
+    toast.success("Conversation réinitialisée");
   };
 
   // Supprimer un message
@@ -109,36 +118,30 @@ const AIChatbot = () => {
     setEditText('');
   };
   
-  // Système de prompts amélioré avec données utilisateur en temps réel
+  // Système de prompts avec données utilisateur
   const getSystemMessage = () => {
     const userInfo = `
-    Informations utilisateur (mises à jour en temps réel):
+    Informations utilisateur:
     - Nom: ${userData.name || 'Utilisateur'}
     - Genre: ${userData.gender === 'female' ? 'Femme' : userData.gender === 'male' ? 'Homme' : 'Non spécifié'}
     - Âge: ${userData.age || 'Non spécifié'} ans
     - Poids: ${userData.weight || 'Non spécifié'} kg
     - Taille: ${userData.height || 'Non spécifié'} cm
     - Objectif: ${userData.goal === 'lose' ? 'Perdre du poids' : userData.goal === 'gain' ? 'Prendre du poids' : 'Maintenir le poids'}
-    - Préférences: ${userData.preferences?.halal ? 'Halal' : ''} ${userData.preferences?.vegetarian ? ', Végétarien' : ''} ${userData.preferences?.vegan ? ', Végétalien' : ''}
-    - Allergies: ${userData.preferences?.allergies?.join(', ') || 'Aucune'}
-    - Points de gamification: ${userData.gamification?.points || 0}
-    - Niveau: ${userData.gamification?.level || 1}
-    - Streak: ${userData.gamification?.streak || 0} jours
+    - Points: ${userData.gamification?.points || 0}
     `;
 
-    return `Tu es un assistant IA islamique spécialisé dans la nutrition halal, la diététique et le bien-être selon les enseignements de l'Islam.
+    return `Tu es un assistant IA islamique spécialisé dans la nutrition halal et le bien-être selon l'Islam.
     
     ${userInfo}
     
-    DIRECTIVES IMPORTANTES:
+    DIRECTIVES:
     - Réponds TOUJOURS en français
     - Reste dans le domaine de la nutrition, santé et bien-être islamique
     - Utilise des références au Coran et à la Sunna quand approprié
     - Sois bienveillant et respectueux des valeurs islamiques
-    - Adapte tes conseils au profil de l'utilisateur mis à jour en temps réel
-    - Suggère des aliments halal et des habitudes saines selon l'Islam
-    - Si on te pose des questions hors sujet, redirige poliment vers la nutrition/santé islamique
-    - Prends en compte les données de gamification pour encourager l'utilisateur`;
+    - Adapte tes conseils au profil de l'utilisateur
+    - Suggère des aliments halal et des habitudes saines selon l'Islam`;
   };
   
   const handleSelectSuggestion = (question: string) => {
@@ -153,8 +156,7 @@ const AIChatbot = () => {
     const apiKey = getApiKey();
     if (!apiKey) {
       toast.error("Clé API manquante", {
-        description: "Veuillez configurer votre clé API dans les paramètres",
-        duration: 4000,
+        description: "Veuillez configurer votre clé API dans les paramètres"
       });
       return;
     }
@@ -170,8 +172,7 @@ const AIChatbot = () => {
     setIsLoading(true);
     
     try {
-      console.log('Envoi de la requête à GROQ API...');
-      console.log('Message:', message);
+      console.log('Envoi à GROQ API avec clé:', apiKey.substring(0, 10) + '...');
       
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -201,19 +202,19 @@ const AIChatbot = () => {
         }),
       });
       
-      console.log('Statut de la réponse:', response.status);
+      console.log('Statut réponse:', response.status);
       
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Erreur API:', response.status, errorText);
-        throw new Error(`Erreur API: ${response.status} - ${errorText}`);
+        const errorData = await response.text();
+        console.error('Erreur API:', response.status, errorData);
+        throw new Error(`Erreur ${response.status}: ${errorData}`);
       }
       
       const data = await response.json();
-      console.log('Réponse reçue de GROQ:', data);
+      console.log('Réponse GROQ:', data);
       
-      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        throw new Error('Format de réponse invalide');
+      if (!data.choices?.[0]?.message?.content) {
+        throw new Error('Réponse invalide de l\'API');
       }
       
       const aiMessage: AIMessage = {
@@ -229,7 +230,7 @@ const AIChatbot = () => {
       if (messages.length === 1) {
         addPoints(10, "Première consultation assistant IA");
         toast.success("Félicitations !", {
-          description: "Première consultation avec l'assistant nutritionnel islamique !",
+          description: "Première consultation avec l'assistant nutritionnel islamique !"
         });
       }
       
@@ -238,9 +239,8 @@ const AIChatbot = () => {
       
       if (retryCount < 2) {
         setRetryCount(prev => prev + 1);
-        toast.error("Connexion en cours...", {
-          description: `Nouvelle tentative ${retryCount + 1}/3`,
-          duration: 2000,
+        toast.error("Tentative de reconnexion...", {
+          description: `Essai ${retryCount + 1}/3`
         });
         
         setTimeout(() => {
@@ -250,8 +250,7 @@ const AIChatbot = () => {
       }
       
       toast.error("Assistant temporairement indisponible", {
-        description: "Vérifiez votre clé API dans les paramètres ou votre connexion internet",
-        duration: 4000,
+        description: "Vérifiez votre clé API dans les paramètres"
       });
       
       const fallbackMessage: AIMessage = {
