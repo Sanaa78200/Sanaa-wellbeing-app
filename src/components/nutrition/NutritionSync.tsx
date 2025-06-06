@@ -37,13 +37,13 @@ const NutritionSync: React.FC<NutritionSyncProps> = ({ meals, onMealsUpdate }) =
     const totals = calculateTotals(meals);
     
     // Mettre à jour les données nutritionnelles du jour
-    updateUserData({
-      dailyNutrition: {
-        date: new Date().toISOString().split('T')[0],
-        totals,
-        mealsCount: meals.length
-      }
-    });
+    const dailyNutrition = {
+      date: new Date().toISOString().split('T')[0],
+      totals,
+      mealsCount: meals.length
+    };
+
+    updateUserData({ dailyNutrition });
   }, [meals, updateUserData]);
 
   // Charger les repas stockés au démarrage

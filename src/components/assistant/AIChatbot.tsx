@@ -2,12 +2,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AIMessage } from '@/components/nutrition/types';
 import { useUser } from '@/context/UserContext';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Send, MessageCircle, X, Smartphone, RotateCcw, Edit3, Trash2 } from 'lucide-react';
+import { MessageCircle, Smartphone } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import ChatHeader from './ChatHeader';
+import MessageList from './MessageList';
+import ChatForm from './ChatForm';
 
 // Clé API GROQ mise à jour
 const GROQ_API_KEY = "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";
@@ -282,38 +282,12 @@ const AIChatbot = () => {
       {/* Interface chatbot améliorée */}
       <div className={chatbotClasses} onClick={() => setIsOpen(false)}>
         <div className={chatbotContentClasses} onClick={(e) => e.stopPropagation()}>
-          {/* En-tête amélioré avec boutons d'action */}
-          <div className="flex justify-between items-center p-4 bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 text-islamic-green" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">Assistant Nutrition Islamique</h3>
-                <div className="flex items-center space-x-2">
-                  <Badge className="bg-islamic-cream text-islamic-green text-xs">Halal & Sunna</Badge>
-                  {isMobileOptimized && <Badge className="bg-white/20 text-white text-xs">Mobile</Badge>}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button 
-                onClick={resetConversation}
-                className="p-2 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="Réinitialiser la conversation"
-                title="Nouvelle conversation"
-              >
-                <RotateCcw className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={() => setIsOpen(false)} 
-                className="p-2 rounded-full hover:bg-white/20 transition-colors"
-                aria-label="Fermer l'assistant"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
+          <ChatHeader
+            userName={userData.name}
+            isMobileOptimized={isMobileOptimized}
+            onClose={() => setIsOpen(false)}
+            onReset={resetConversation}
+          />
           
           {/* Zone publicitaire préparée */}
           <div className="h-16 bg-gray-50 border-b flex items-center justify-center text-gray-400 text-sm">
@@ -322,97 +296,23 @@ const AIChatbot = () => {
             </div>
           </div>
           
-          {/* Messages avec hauteur adaptative */}
-          <div className={`${isMobileOptimized ? 'h-full' : 'h-96'} overflow-y-auto p-4 flex flex-col gap-3 bg-islamic-pattern bg-opacity-5`}>
-            {messages.length === 0 ? (
-              <div className="text-center text-gray-600 my-auto p-4 bg-white/90 rounded-lg shadow-sm">
-                <MessageCircle className="w-16 h-16 mx-auto mb-3 opacity-40 text-islamic-green" />
-                <p className="mb-4 font-medium">السلام عليكم {userData.name || ''} ! Posez vos questions sur la nutrition halal et le bien-être selon l'Islam.</p>
-                
-                {showSuggestions && (
-                  <div className="space-y-2 mt-4">
-                    <p className="font-semibold text-islamic-green text-sm mb-3">Questions suggérées :</p>
-                    {suggestedQuestions.map((q, i) => (
-                      <div 
-                        key={i} 
-                        className="text-left text-sm p-3 bg-islamic-cream rounded-lg cursor-pointer hover:bg-islamic-cream/80 transition-colors border border-islamic-green/10"
-                        onClick={() => handleSelectSuggestion(q)}
-                      >
-                        {q}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`${
-                    msg.role === 'user' 
-                      ? 'bg-islamic-cream self-end ml-8 border-islamic-green/20' 
-                      : 'bg-white self-start mr-8 border-gray-200'
-                  } rounded-lg p-3 max-w-[85%] border shadow-sm animate-fade-in group relative`}
-                >
-                  {editingMessageId === index ? (
-                    <div className="space-y-2">
-                      <textarea
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        className="w-full p-2 border rounded text-sm resize-none"
-                        rows={3}
-                      />
-                      <div className="flex space-x-2">
-                        <Button size="sm" onClick={() => saveEditMessage(index)}>
-                          Sauvegarder
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={cancelEdit}>
-                          Annuler
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                      <div className="flex justify-between items-center mt-2">
-                        <span className="text-xs text-gray-500">
-                          {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          {msg.edited && <span className="ml-1 text-islamic-green">(modifié)</span>}
-                        </span>
-                        {msg.role === 'user' && (
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
-                            <button
-                              onClick={() => startEditMessage(index, msg.content)}
-                              className="p-1 text-gray-400 hover:text-islamic-green"
-                              title="Modifier"
-                            >
-                              <Edit3 className="w-3 h-3" />
-                            </button>
-                            <button
-                              onClick={() => deleteMessage(index)}
-                              className="p-1 text-gray-400 hover:text-red-500"
-                              title="Supprimer"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))
-            )}
-            {isLoading && (
-              <div className="bg-white self-start rounded-lg p-4 mr-8 border border-gray-200 shadow-sm">
-                <div className="flex items-center space-x-3">
-                  <Loader2 className="w-5 h-5 animate-spin text-islamic-green" />
-                  <span className="text-sm text-islamic-green font-medium">L'assistant réfléchit...</span>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+          <MessageList
+            messages={messages}
+            isLoading={isLoading}
+            isMobileOptimized={isMobileOptimized}
+            showSuggestions={showSuggestions}
+            userName={userData.name}
+            suggestedQuestions={suggestedQuestions}
+            editingMessageId={editingMessageId}
+            editText={editText}
+            onSelectSuggestion={handleSelectSuggestion}
+            onStartEdit={startEditMessage}
+            onSaveEdit={saveEditMessage}
+            onCancelEdit={cancelEdit}
+            onDeleteMessage={deleteMessage}
+            onEditTextChange={setEditText}
+            messagesEndRef={messagesEndRef}
+          />
           
           {/* Zone publicitaire mobile */}
           {isMobileOptimized && (
@@ -423,26 +323,13 @@ const AIChatbot = () => {
             </div>
           )}
           
-          {/* Formulaire amélioré */}
-          <form onSubmit={handleSubmit} className="p-4 border-t bg-white flex gap-3">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={isMobileOptimized ? "Votre question..." : "Posez votre question sur la nutrition halal..."}
-              disabled={isLoading}
-              className="flex-1 border-islamic-green/30 focus-visible:ring-islamic-green text-sm"
-              aria-label="Saisir une question sur la nutrition islamique"
-            />
-            <Button 
-              type="submit" 
-              size="icon" 
-              className="bg-islamic-green hover:bg-islamic-green-dark transition-colors"
-              disabled={isLoading || !message.trim()}
-              aria-label="Envoyer la question"
-            >
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-            </Button>
-          </form>
+          <ChatForm
+            message={message}
+            isLoading={isLoading}
+            isMobileOptimized={isMobileOptimized}
+            onMessageChange={setMessage}
+            onSubmit={handleSubmit}
+          />
         </div>
       </div>
     </>

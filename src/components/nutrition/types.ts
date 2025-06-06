@@ -19,6 +19,7 @@ export interface UserPreferences {
   vegetarian?: boolean;
   vegan?: boolean;
   allergies?: string[];
+  favoriteFoods?: string[];
 }
 
 export interface Challenge {
@@ -38,6 +39,8 @@ export interface Badge {
   description: string;
   icon: string;
   unlockedAt?: string;
+  isEarned?: boolean;
+  earnedAt?: string;
 }
 
 export interface Gamification {
@@ -47,6 +50,13 @@ export interface Gamification {
   challenges: Challenge[];
   badges: Badge[];
   achievements: string[];
+  lastActiveDate?: string;
+}
+
+export interface DailyNutrition {
+  date: string;
+  totals: NutritionTotals;
+  mealsCount: number;
 }
 
 export interface UserData {
@@ -54,10 +64,12 @@ export interface UserData {
   age?: string;
   weight?: string;
   height?: string;
-  gender?: 'male' | 'female';
+  gender?: 'male' | 'female' | 'other';
   goal?: 'lose' | 'gain' | 'maintain';
   preferences?: UserPreferences;
   gamification?: Gamification;
+  avatar?: string;
+  dailyNutrition?: DailyNutrition;
 }
 
 export interface AIMessage {
@@ -80,3 +92,7 @@ export interface Progress {
   carbs: number;
   fat: number;
 }
+
+// Legacy alias for compatibility
+export type Totals = NutritionTotals;
+export type GamificationData = Gamification;
