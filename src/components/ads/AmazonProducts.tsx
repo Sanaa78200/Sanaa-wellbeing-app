@@ -22,7 +22,7 @@ interface AmazonProductsProps {
   className?: string;
 }
 
-// Produits Amazon basés sur vos liens
+// Produits Amazon avec vraies images
 const amazonProducts: AmazonProduct[] = [
   {
     id: '1',
@@ -30,7 +30,7 @@ const amazonProducts: AmazonProduct[] = [
     description: 'Tapis de prière doux et confortable pour vos moments de spiritualité',
     price: '29,99€',
     rating: 4.8,
-    image: '/placeholder.svg',
+    image: 'https://images.unsplash.com/photo-1466442929976-97f336a657be?w=400&h=400&fit=crop',
     url: 'https://amzn.to/4e3mISx',
     category: 'Spiritualité'
   },
@@ -40,7 +40,7 @@ const amazonProducts: AmazonProduct[] = [
     description: 'Édition de qualité avec traduction et phonétique',
     price: '24,99€',
     rating: 4.9,
-    image: '/placeholder.svg',
+    image: 'https://images.unsplash.com/photo-1492321936769-b49830bc1d1e?w=400&h=400&fit=crop',
     url: 'https://amzn.to/4e3mTgF',
     category: 'Livre'
   },
@@ -50,7 +50,7 @@ const amazonProducts: AmazonProduct[] = [
     description: 'Parfum authentique pour créer une ambiance spirituelle',
     price: '15,99€',
     rating: 4.7,
-    image: '/placeholder.svg',
+    image: 'https://images.unsplash.com/photo-1466442929976-97f336a657be?w=400&h=400&fit=crop',
     url: 'https://amzn.to/4l049B0',
     category: 'Parfum'
   },
@@ -60,7 +60,7 @@ const amazonProducts: AmazonProduct[] = [
     description: 'Chapelet traditionnel en bois naturel de qualité',
     price: '12,99€',
     rating: 4.6,
-    image: '/placeholder.svg',
+    image: 'https://images.unsplash.com/photo-1492321936769-b49830bc1d1e?w=400&h=400&fit=crop',
     url: 'https://amzn.to/45oRjYz',
     category: 'Accessoire'
   },
@@ -70,7 +70,7 @@ const amazonProducts: AmazonProduct[] = [
     description: 'Horloge avec appel à la prière automatique',
     price: '49,99€',
     rating: 4.5,
-    image: '/placeholder.svg',
+    image: 'https://images.unsplash.com/photo-1466442929976-97f336a657be?w=400&h=400&fit=crop',
     url: 'https://amzn.to/3HFW0Do',
     category: 'Électronique'
   },
@@ -80,7 +80,7 @@ const amazonProducts: AmazonProduct[] = [
     description: 'Recueil complet des invocations quotidiennes',
     price: '18,99€',
     rating: 4.8,
-    image: '/placeholder.svg',
+    image: 'https://images.unsplash.com/photo-1492321936769-b49830bc1d1e?w=400&h=400&fit=crop',
     url: 'https://amzn.to/4n4GqS0',
     category: 'Livre'
   }
@@ -215,19 +215,11 @@ export const AmazonProducts: React.FC<AmazonProductsProps> = ({
   );
 };
 
-// Composants spécialisés pour différents emplacements
-export const NavbarAmazonBanner: React.FC = () => (
-  <div className="w-full h-8 bg-gradient-to-r from-islamic-cream to-islamic-green/10 border-b flex items-center justify-center">
-    <div className="container mx-auto px-4">
-      <AmazonProducts layout="horizontal" maxProducts={6} />
-    </div>
-  </div>
-);
-
+// Composant principal pour bannière Amazon repositionnée
 export const MainAmazonBanner: React.FC = () => (
-  <Card className="overflow-hidden">
+  <Card className="overflow-hidden mb-6">
     <CardHeader className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white py-3">
-      <CardTitle className="text-lg">🛍️ Produits Recommandés Amazon</CardTitle>
+      <CardTitle className="text-lg">🛍️ Produits Islamiques Recommandés</CardTitle>
     </CardHeader>
     <CardContent className="p-4">
       <AmazonProducts layout="grid" maxProducts={6} />
@@ -235,6 +227,7 @@ export const MainAmazonBanner: React.FC = () => (
   </Card>
 );
 
+// Composant pour la sidebar
 export const SidebarAmazonProducts: React.FC = () => (
   <Card>
     <CardHeader className="pb-3">

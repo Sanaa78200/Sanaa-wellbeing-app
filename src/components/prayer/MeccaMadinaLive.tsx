@@ -98,185 +98,195 @@ const MeccaMadinaLive = () => {
           </div>
         </div>
         
-        {/* Zone produits Amazon principale */}
-        <div className="mb-8">
-          <MainAmazonBanner />
-        </div>
-        
-        <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'lg:grid-cols-2'}`}>
-          {/* Mecca Live */}
-          <Card className="overflow-hidden shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
-              <CardTitle className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  🕋 La Mecque (Mecca)
-                </span>
-                <Badge className="bg-white/20 text-white">
-                  Source {currentMeccaSource + 1}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="relative">
-                <div className="aspect-video">
-                  <iframe
-                    id="mecca-iframe"
-                    src={`${meccaSources[currentMeccaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
-                    title="Mecca Live Stream"
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-                
-                {/* Contrôles vidéo */}
-                <div className="p-4 bg-gray-50 border-t">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={toggleMute}
-                      className="flex items-center gap-2"
-                    >
-                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                      {isMuted ? 'Activer le son' : 'Couper le son'}
-                    </Button>
+        <div className="grid gap-6 lg:grid-cols-4">
+          {/* Zone vidéos principales */}
+          <div className="lg:col-span-3 space-y-6">
+            <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
+              {/* Mecca Live */}
+              <Card className="overflow-hidden shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      🕋 La Mecque (Mecca)
+                    </span>
+                    <Badge className="bg-white/20 text-white">
+                      Source {currentMeccaSource + 1}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="relative">
+                    <div className="aspect-video">
+                      <iframe
+                        id="mecca-iframe"
+                        src={`${meccaSources[currentMeccaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
+                        title="Mecca Live Stream"
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
                     
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => toggleFullscreen('mecca-iframe')}
-                      className="flex items-center gap-2"
-                    >
-                      <Maximize className="w-4 h-4" />
-                      Plein écran
-                    </Button>
-                  </div>
-                  
-                  {/* Sélecteur de source */}
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-600">Sources disponibles :</p>
-                    <div className="flex flex-wrap gap-1">
-                      {meccaSources.map((source, index) => (
+                    {/* Contrôles vidéo */}
+                    <div className="p-4 bg-gray-50 border-t">
+                      <div className="flex flex-wrap gap-2 mb-3">
                         <Button
-                          key={index}
-                          variant={currentMeccaSource === index ? "default" : "outline"}
+                          variant="outline"
                           size="sm"
-                          onClick={() => changeSource('mecca', index)}
-                          className="text-xs"
+                          onClick={toggleMute}
+                          className="flex items-center gap-2"
                         >
-                          Source {index + 1}
+                          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                          {isMuted ? 'Activer le son' : 'Couper le son'}
                         </Button>
-                      ))}
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleFullscreen('mecca-iframe')}
+                          className="flex items-center gap-2"
+                        >
+                          <Maximize className="w-4 h-4" />
+                          Plein écran
+                        </Button>
+                      </div>
+                      
+                      {/* Sélecteur de source */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-gray-600">Sources disponibles :</p>
+                        <div className="flex flex-wrap gap-1">
+                          {meccaSources.map((source, index) => (
+                            <Button
+                              key={index}
+                              variant={currentMeccaSource === index ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => changeSource('mecca', index)}
+                              className="text-xs"
+                            >
+                              Source {index + 1}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+              
+              {/* Madina Live */}
+              <Card className="overflow-hidden shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      🕌 Médine (Madina)
+                    </span>
+                    <Badge className="bg-white/20 text-white">
+                      Source {currentMadinaSource + 1}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="relative">
+                    <div className="aspect-video">
+                      <iframe
+                        id="madina-iframe"
+                        src={`${madinaSources[currentMadinaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
+                        title="Madina Live Stream"
+                        className="w-full h-full"
+                        allowFullScreen
+                      />
+                    </div>
+                    
+                    {/* Contrôles vidéo */}
+                    <div className="p-4 bg-gray-50 border-t">
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={toggleMute}
+                          className="flex items-center gap-2"
+                        >
+                          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                          {isMuted ? 'Activer le son' : 'Couper le son'}
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleFullscreen('madina-iframe')}
+                          className="flex items-center gap-2"
+                        >
+                          <Maximize className="w-4 h-4" />
+                          Plein écran
+                        </Button>
+                      </div>
+                      
+                      {/* Sélecteur de source */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-gray-600">Sources disponibles :</p>
+                        <div className="flex flex-wrap gap-1">
+                          {madinaSources.map((source, index) => (
+                            <Button
+                              key={index}
+                              variant={currentMadinaSource === index ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => changeSource('madina', index)}
+                              className="text-xs"
+                            >
+                              Source {index + 1}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Zone produits Amazon pour desktop en bas */}
+            {!isMobile && (
+              <MainAmazonBanner />
+            )}
+            
+            {/* Informations complémentaires */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-islamic-green">📱 Optimisé Mobile</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600">
+                    Cette interface s'adapte automatiquement à votre appareil pour une expérience optimale sur mobile et desktop.
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-islamic-green">🌐 Sources Multiples</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600">
+                    Plusieurs sources de diffusion disponibles pour garantir une connexion stable en permanence.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
           
-          {/* Madina Live - mise à jour avec nouvelle source */}
-          <Card className="overflow-hidden shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-islamic-green to-islamic-green-dark text-white">
-              <CardTitle className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  🕌 Médine (Madina)
-                </span>
-                <Badge className="bg-white/20 text-white">
-                  Source {currentMadinaSource + 1}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="relative">
-                <div className="aspect-video">
-                  <iframe
-                    id="madina-iframe"
-                    src={`${madinaSources[currentMadinaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
-                    title="Madina Live Stream"
-                    className="w-full h-full"
-                    allowFullScreen
-                  />
-                </div>
-                
-                {/* Contrôles vidéo */}
-                <div className="p-4 bg-gray-50 border-t">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={toggleMute}
-                      className="flex items-center gap-2"
-                    >
-                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                      {isMuted ? 'Activer le son' : 'Couper le son'}
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => toggleFullscreen('madina-iframe')}
-                      className="flex items-center gap-2"
-                    >
-                      <Maximize className="w-4 h-4" />
-                      Plein écran
-                    </Button>
-                  </div>
-                  
-                  {/* Sélecteur de source */}
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-600">Sources disponibles :</p>
-                    <div className="flex flex-wrap gap-1">
-                      {madinaSources.map((source, index) => (
-                        <Button
-                          key={index}
-                          variant={currentMadinaSource === index ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => changeSource('madina', index)}
-                          className="text-xs"
-                        >
-                          Source {index + 1}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Zone produits Amazon pour mobile */}
-        {isMobile && (
-          <div className="mt-6">
+          {/* Sidebar droite avec produits Amazon */}
+          <div className="lg:col-span-1">
             <SidebarAmazonProducts />
           </div>
-        )}
-        
-        {/* Informations complémentaires */}
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-islamic-green">📱 Optimisé Mobile</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600">
-                Cette interface s'adapte automatiquement à votre appareil pour une expérience optimale sur mobile et desktop.
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-islamic-green">🌐 Sources Multiples</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600">
-                Plusieurs sources de diffusion disponibles pour garantir une connexion stable en permanence.
-              </p>
-            </CardContent>
-          </Card>
         </div>
+        
+        {/* Zone produits Amazon pour mobile en bas de page */}
+        {isMobile && (
+          <div className="mt-8">
+            <MainAmazonBanner />
+          </div>
+        )}
       </div>
     </div>
   );
