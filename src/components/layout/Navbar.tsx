@@ -5,6 +5,7 @@ import { Menu, X, Moon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { NavbarAmazonBanner } from '@/components/ads/AmazonProducts';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,12 +59,8 @@ const Navbar = () => {
   
   return (
     <nav className="bg-white shadow-sm border-b border-islamic-green/10 sticky top-0 z-40">
-      {/* Zone publicitaire en haut */}
-      <div className="w-full h-8 bg-gray-50 border-b flex items-center justify-center text-gray-400 text-xs">
-        <div id="google-ads-navbar" className="w-full h-full flex items-center justify-center">
-          <span>Publicité Google Ads</span>
-        </div>
-      </div>
+      {/* Zone produits Amazon en haut */}
+      <NavbarAmazonBanner />
       
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">

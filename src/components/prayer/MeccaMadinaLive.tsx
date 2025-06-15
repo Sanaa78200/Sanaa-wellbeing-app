@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Play, Pause, Volume2, VolumeX, Maximize, Monitor, Smartphone } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/components/ui/sonner';
+import { MainAmazonBanner, SidebarAmazonProducts } from '@/components/ads/AmazonProducts';
 
 const MeccaMadinaLive = () => {
   const [currentMeccaSource, setCurrentMeccaSource] = useState(0);
@@ -96,17 +98,9 @@ const MeccaMadinaLive = () => {
           </div>
         </div>
         
-        {/* Zone publicitaire principale */}
+        {/* Zone produits Amazon principale */}
         <div className="mb-8">
-          <Card className="overflow-hidden">
-            <CardContent className="p-0">
-              <div className="h-20 bg-gradient-to-r from-gray-50 to-gray-100 flex items-center justify-center border-b">
-                <div id="google-ads-mecca-main" className="w-full h-full flex items-center justify-center text-gray-400">
-                  <span>Zone publicitaire principale - Google Ads</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <MainAmazonBanner />
         </div>
         
         <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'lg:grid-cols-2'}`}>
@@ -252,18 +246,10 @@ const MeccaMadinaLive = () => {
           </Card>
         </div>
         
-        {/* Zone publicitaire latérale mobile */}
+        {/* Zone produits Amazon pour mobile */}
         {isMobile && (
           <div className="mt-6">
-            <Card>
-              <CardContent className="p-4">
-                <div className="h-16 bg-gray-50 rounded flex items-center justify-center text-gray-400 text-sm">
-                  <div id="google-ads-mobile-bottom" className="w-full h-full flex items-center justify-center">
-                    <span>Publicité mobile - Google Ads</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <SidebarAmazonProducts />
           </div>
         )}
         
