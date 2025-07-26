@@ -19,8 +19,8 @@ const Footer = () => {
               <h4 className="font-semibold text-islamic-green mb-3">Liens</h4>
               <ul className="space-y-2">
                 <li><Link to="/" className="text-islamic-slate hover:text-islamic-green transition-colors">Accueil</Link></li>
-                <li><Link to="/calculateur" className="text-islamic-slate hover:text-islamic-green transition-colors">Calculateur</Link></li>
                 <li><Link to="/prieres" className="text-islamic-slate hover:text-islamic-green transition-colors">Horaires de prière</Link></li>
+                <li><Link to="/profil" className="text-islamic-slate hover:text-islamic-green transition-colors">Mon Profil</Link></li>
               </ul>
             </div>
             
@@ -37,7 +37,7 @@ const Footer = () => {
             <div className="col-span-2 md:col-span-1 mt-6 md:mt-0">
               <h4 className="font-semibold text-islamic-green mb-3">À propos</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-islamic-slate hover:text-islamic-green transition-colors">Confidentialité</a></li>
+                <li><Link to="/rgpd" className="text-islamic-slate hover:text-islamic-green transition-colors">RGPD & Confidentialité</Link></li>
                 <li><a href="#" className="text-islamic-slate hover:text-islamic-green transition-colors">Conditions d'utilisation</a></li>
                 <li><a href="#" className="text-islamic-slate hover:text-islamic-green transition-colors">Contact</a></li>
               </ul>

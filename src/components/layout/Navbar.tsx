@@ -18,27 +18,27 @@ const Navbar = () => {
   // Navigation cohérente et organisée
   const navItems = [
     {
-      name: 'Accueil',
+      name: t('home'),
       path: '/',
       category: 'main'
     },
     {
-      name: 'Prières',
+      name: t('prayers'),
       path: '/prieres',
       category: 'spiritual'
     },
     {
-      name: 'Nutrition & Régime',
+      name: t('nutrition'),
       path: '/nutrition-regime',
       category: 'health'
     },
     {
-      name: 'Coran',
+      name: t('quran'),
       path: '/coran',
       category: 'spiritual'
     },
     {
-      name: 'Ramadan',
+      name: t('ramadan'),
       path: '/ramadan',
       category: 'spiritual'
     },
@@ -48,7 +48,7 @@ const Navbar = () => {
       category: 'spiritual'
     },
     {
-      name: 'Profil',
+      name: t('profile'),
       path: '/profil',
       category: 'user'
     }

@@ -16,7 +16,7 @@ const Coran = () => {
           {/* Bannière */}
           <div className="bg-islamic-green text-white p-6 rounded-lg mb-8 shadow-lg">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">Le Noble Coran</h1>
-            <p className="opacity-80">Écoutez le Coran avec des fonctionnalités de récitation audio et regardez la vue en direct de Madinah</p>
+            <p className="opacity-80">Écoutez le Noble Coran avec des fonctionnalités de récitation audio</p>
           </div>
 
           {/* Principal */}
