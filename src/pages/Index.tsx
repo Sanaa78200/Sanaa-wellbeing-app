@@ -6,6 +6,7 @@ import HeroSection from '@/components/home/HeroSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import PrayerTimesSection from '@/components/home/PrayerTimesSection';
 import SunnaFoodsSection from '@/components/home/SunnaFoodsSection';
+import ProductShowcase from '@/components/home/ProductShowcase';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Book, Clock, Calendar, Activity, User, Video } from 'lucide-react';
@@ -21,7 +22,7 @@ const Index = () => {
         <section className="py-8 bg-islamic-pattern">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-semibold text-islamic-green text-center mb-6">Accès rapide</h2>
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <Link to="/coran" className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
                 <Book className="h-10 w-10 text-islamic-green mb-2" />
                 <span className="text-islamic-slate font-medium text-center">Le Saint Coran</span>
@@ -37,10 +38,6 @@ const Index = () => {
               <Link to="/nutrition-regime" className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
                 <Activity className="h-10 w-10 text-islamic-green mb-2" />
                 <span className="text-islamic-slate font-medium text-center">Nutrition & Régime</span>
-              </Link>
-              <Link to="/mecca-madina" className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
-                <Video className="h-10 w-10 text-islamic-green mb-2" />
-                <span className="text-islamic-slate font-medium text-center">Mecca & Madina Live</span>
               </Link>
               <Link to="/profil" className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
                 <User className="h-10 w-10 text-islamic-green mb-2" />
@@ -78,6 +75,7 @@ const Index = () => {
           </div>
         </section>
         
+        <ProductShowcase />
         <FeaturesSection />
         <PrayerTimesSection />
         <SunnaFoodsSection />

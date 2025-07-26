@@ -45,17 +45,10 @@ const Coran = () => {
                       </div>
                       <ArrowRight className="h-4 w-4" />
                     </Link>
-                    <Link to="/nutrition" className="flex items-center justify-between p-3 rounded-md bg-islamic-cream hover:bg-islamic-cream/80 transition-colors">
+                    <Link to="/nutrition-regime" className="flex items-center justify-between p-3 rounded-md bg-islamic-cream hover:bg-islamic-cream/80 transition-colors">
                       <div className="flex items-center gap-3">
                         <Book className="text-islamic-green h-5 w-5" />
-                        <span>Nutrition halal</span>
-                      </div>
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                    <Link to="/regime" className="flex items-center justify-between p-3 rounded-md bg-islamic-cream hover:bg-islamic-cream/80 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Book className="text-islamic-green h-5 w-5" />
-                        <span>Régime islamique</span>
+                        <span>Nutrition & Régime</span>
                       </div>
                       <ArrowRight className="h-4 w-4" />
                     </Link>

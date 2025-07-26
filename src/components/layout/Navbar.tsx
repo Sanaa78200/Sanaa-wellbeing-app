@@ -5,11 +5,14 @@ import { Menu, X, Moon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { LanguageSelector } from '@/components/layout/LanguageSelector';
+import { useLanguage } from '@/context/LanguageContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   // Navigation cohérente et organisée
@@ -18,11 +21,6 @@ const Navbar = () => {
       name: 'Accueil',
       path: '/',
       category: 'main'
-    },
-    {
-      name: 'Calculateur',
-      path: '/calculateur',
-      category: 'tools'
     },
     {
       name: 'Prières',
@@ -67,7 +65,7 @@ const Navbar = () => {
           </Link>
           
           {/* Navigation desktop améliorée */}
-          <div className="hidden md:flex space-x-1">
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map(item => (
               <Link 
                 key={item.name} 
@@ -82,6 +80,9 @@ const Navbar = () => {
                 {isMobile ? item.name.split(' ')[0] : item.name}
               </Link>
             ))}
+            <div className="ml-3">
+              <LanguageSelector />
+            </div>
           </div>
           
           {/* Menu mobile optimisé */}
