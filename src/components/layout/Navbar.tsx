@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LanguageSelector } from '@/components/layout/LanguageSelector';
 import { useLanguage } from '@/context/LanguageContext';
+import AmazonBanner from './AmazonBanner';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -55,7 +56,9 @@ const Navbar = () => {
   ];
   
   return (
-    <nav className="bg-white shadow-sm border-b border-islamic-green/10 sticky top-0 z-40">
+    <>
+      <AmazonBanner />
+      <nav className="bg-white shadow-sm border-b border-islamic-green/10 sticky top-0 z-40">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
@@ -121,9 +124,10 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 };
 

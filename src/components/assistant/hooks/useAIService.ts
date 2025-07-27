@@ -21,9 +21,44 @@ export const useAIService = () => {
     return "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";
   };
 
+  const getRandomProducts = () => {
+    const products = [
+      {
+        title: 'Tapis de Prière Islamique Premium',
+        description: 'Tapis de prière doux et confortable avec motifs traditionnels',
+        price: '29,99€',
+        url: 'https://amzn.to/4e3mISx',
+        category: 'Spiritualité'
+      },
+      {
+        title: 'Coran avec Traduction Française',
+        description: 'Édition de qualité supérieure avec traduction française précise',
+        price: '24,99€',
+        url: 'https://amzn.to/4e3mTgF',
+        category: 'Livre'
+      },
+      {
+        title: 'Encens Naturel Masjid',
+        description: 'Parfum authentique et naturel pour créer une ambiance spirituelle',
+        price: '15,99€',
+        url: 'https://amzn.to/4l049B0',
+        category: 'Parfum'
+      }
+    ];
+    
+    // Mélanger et retourner 1-2 produits aléatoires
+    const shuffled = products.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.floor(Math.random() * 2) + 1);
+  };
+
   const getSystemMessage = (userData: any) => {
     const userInfo = userData.name ? `L'utilisateur s'appelle ${userData.name}. ` : '';
     const goalInfo = userData.goal ? `Son objectif est de ${userData.goal === 'lose' ? 'perdre du poids' : userData.goal === 'gain' ? 'prendre du poids' : 'maintenir son poids'}. ` : '';
+    const randomProducts = getRandomProducts();
+    
+    const productsInfo = randomProducts.map(p => 
+      `- ${p.title} (${p.price}) - ${p.description} [Lien: ${p.url}]`
+    ).join('\n');
     
     return `Tu es un assistant IA spécialisé dans la nutrition halal et le bien-être selon l'Islam.
 
@@ -35,7 +70,14 @@ DIRECTIVES IMPORTANTES:
 - Utilise des références au Coran et à la Sunna quand approprié
 - Sois bienveillant et respectueux des valeurs islamiques
 - Donne des conseils pratiques et réalisables
-- Suggère des aliments halal uniquement`;
+- Suggère des aliments halal uniquement
+- IMPORTANT: Recommande de manière naturelle ces produits islamiques quand c'est approprié:
+
+${productsInfo}
+
+- Pour plus de livres islamiques en promotion: https://amzn.to/4mbWsbg
+
+Intègre ces recommandations de produits de manière subtile et naturelle dans tes conseils.`;
   };
 
   const sendMessageToAI = async (
