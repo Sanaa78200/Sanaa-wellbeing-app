@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LanguageSelector } from '@/components/layout/LanguageSelector';
 import { useLanguage } from '@/context/LanguageContext';
+import { useAuth } from '@/context/AuthContext';
 import AmazonBanner from './AmazonBanner';
 
 const Navbar = () => {
@@ -14,6 +15,7 @@ const Navbar = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   // Navigation cohérente et organisée
@@ -83,8 +85,27 @@ const Navbar = () => {
                 {isMobile ? item.name.split(' ')[0] : item.name}
               </Link>
             ))}
-            <div className="ml-3">
+            <div className="ml-3 flex items-center gap-2">
               <LanguageSelector />
+              {user ? (
+                <Button 
+                  onClick={signOut}
+                  variant="ghost" 
+                  size="sm"
+                  className="text-islamic-green hover:bg-islamic-green/10"
+                >
+                  Déconnexion
+                </Button>
+              ) : (
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  size="sm"
+                  className="border-islamic-green text-islamic-green hover:bg-islamic-green hover:text-white"
+                >
+                  <Link to="/auth">Connexion</Link>
+                </Button>
+              )}
             </div>
           </div>
           

@@ -42,6 +42,19 @@ const Footer = () => {
                 <li><a href="#" className="text-islamic-slate hover:text-islamic-green transition-colors">Contact</a></li>
               </ul>
             </div>
+            
+            <div className="md:col-span-1">
+              <h4 className="font-semibold text-islamic-gold mb-3">🎁 Idées Cadeaux Islam</h4>
+              <a 
+                href="https://amzn.to/4lQea4B" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-islamic-slate hover:text-islamic-gold transition-colors text-sm"
+              >
+                Découvrir nos cadeaux spirituels
+                <span className="ml-2">→</span>
+              </a>
+            </div>
           </div>
         </div>
         

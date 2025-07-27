@@ -60,7 +60,24 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('language', language);
     document.documentElement.setAttribute('lang', language);
     document.documentElement.setAttribute('dir', language === 'ar' ? 'rtl' : 'ltr');
+    
+    // Force complete re-render of the page for language change
+    const event = new CustomEvent('languageChanged', { detail: { language } });
+    window.dispatchEvent(event);
+    
+    // Reload page to ensure complete translation
+    if (localStorage.getItem('language-changed')) {
+      localStorage.removeItem('language-changed');
+      window.location.reload();
+    }
   }, [language]);
+
+  const setLanguageWithReload = (lang: Language) => {
+    if (lang !== language) {
+      localStorage.setItem('language-changed', 'true');
+      setLanguage(lang);
+    }
+  };
 
   const t = (key: string): string => {
     return translations[key]?.[language] || key;
@@ -69,7 +86,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const dir = language === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, dir }}>
+    <LanguageContext.Provider value={{ language, setLanguage: setLanguageWithReload, t, dir }}>
       {children}
     </LanguageContext.Provider>
   );
