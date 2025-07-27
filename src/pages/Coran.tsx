@@ -85,12 +85,12 @@ const Coran = () => {
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold text-islamic-green mb-4">Sourates populaires</h2>
                   <div className="grid grid-cols-2 gap-2">
-                    <Button surahNumber={1} name="Al-Fatiha" />
-                    <Button surahNumber={36} name="Ya-Sin" />
-                    <Button surahNumber={55} name="Ar-Rahman" />
-                    <Button surahNumber={67} name="Al-Mulk" />
-                    <Button surahNumber={18} name="Al-Kahf" />
-                    <Button surahNumber={56} name="Al-Waqi'ah" />
+                     <SurahButton surahNumber={1} name="Al-Fatiha" />
+                     <SurahButton surahNumber={36} name="Ya-Sin" />
+                     <SurahButton surahNumber={55} name="Ar-Rahman" />
+                     <SurahButton surahNumber={67} name="Al-Mulk" />
+                     <SurahButton surahNumber={18} name="Al-Kahf" />
+                     <SurahButton surahNumber={56} name="Al-Waqi'ah" />
                   </div>
                 </CardContent>
               </Card>
@@ -129,7 +129,7 @@ const Coran = () => {
 };
 
 // Composant bouton pour les sourates populaires
-const Button = ({ surahNumber, name }: { surahNumber: number; name: string }) => {
+const SurahButton = ({ surahNumber, name }: { surahNumber: number; name: string }) => {
   return (
     <button 
       className="bg-islamic-cream/50 hover:bg-islamic-cream transition-colors rounded-md p-2 text-sm flex justify-between items-center"
