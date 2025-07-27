@@ -4,7 +4,8 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Moon, Calendar, Droplets, Utensils, Clock } from 'lucide-react';
+import { Moon, Calendar, Droplets, Utensils, Clock, Book, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface MealPlan {
   title: string;
@@ -282,14 +283,55 @@ const Ramadan = () => {
                             </p>
                           </div>
                         </div>
-                      </div>
-                      
-                      <div className="pt-4 border-t border-islamic-green/10">
-                        <blockquote className="italic text-islamic-slate">
-                          <p>"Le jeûne et le Coran intercèdent pour le serviteur le Jour de la Résurrection. Le jeûne dit : 'Seigneur! Je l'ai privé de nourriture et de désirs pendant la journée, permets-moi donc d'intercéder pour lui.' Et le Coran dit : 'Je l'ai privé de sommeil la nuit, permets-moi donc d'intercéder pour lui.' Leur intercession est alors acceptée."</p>
-                          <footer className="text-islamic-green text-sm mt-2">— Ahmad, authentifié par Al-Albani</footer>
-                        </blockquote>
-                      </div>
+                       </div>
+                       
+                       <div className="pt-4 border-t border-islamic-green/10">
+                         <h3 className="font-semibold text-islamic-green-dark mb-3">Les bienfaits du Miswak pendant le Ramadan</h3>
+                         <div className="bg-islamic-cream p-4 rounded-md">
+                           <p className="text-islamic-slate mb-3">
+                             Le Prophète ﷺ a dit : "Si ce n'était la difficulté pour ma communauté, je leur ordonnerais l'usage du miswak à chaque ablution." 
+                             Le miswak présente de nombreux bienfaits, particulièrement pendant le mois de Ramadan :
+                           </p>
+                           <ul className="space-y-2 text-islamic-slate mb-4">
+                             <li className="flex items-start gap-2">
+                               <span className="text-islamic-green">•</span>
+                               <span>Maintient une hygiène bucco-dentaire naturelle pendant le jeûne</span>
+                             </li>
+                             <li className="flex items-start gap-2">
+                               <span className="text-islamic-green">•</span>
+                               <span>Possède des propriétés antibactériennes et antiseptiques</span>
+                             </li>
+                             <li className="flex items-start gap-2">
+                               <span className="text-islamic-green">•</span>
+                               <span>Rafraîchit l'haleine naturellement</span>
+                             </li>
+                             <li className="flex items-start gap-2">
+                               <span className="text-islamic-green">•</span>
+                               <span>Renforce les gencives et prévient les caries</span>
+                             </li>
+                             <li className="flex items-start gap-2">
+                               <span className="text-islamic-green">•</span>
+                               <span>Recommandé par notre Prophète ﷺ comme Sunna</span>
+                             </li>
+                           </ul>
+                           <Button 
+                             variant="outline" 
+                             size="sm"
+                             className="bg-white text-islamic-green hover:bg-islamic-cream border-islamic-green"
+                             onClick={() => window.open('https://amzn.to/4700GhU', '_blank')}
+                           >
+                             <span>Découvrir le Miswak Premium</span>
+                             <ExternalLink className="w-4 h-4 ml-2" />
+                           </Button>
+                         </div>
+                       </div>
+                       
+                       <div className="pt-4 border-t border-islamic-green/10">
+                         <blockquote className="italic text-islamic-slate">
+                           <p>"Le jeûne et le Coran intercèdent pour le serviteur le Jour de la Résurrection. Le jeûne dit : 'Seigneur! Je l'ai privé de nourriture et de désirs pendant la journée, permets-moi donc d'intercéder pour lui.' Et le Coran dit : 'Je l'ai privé de sommeil la nuit, permets-moi donc d'intercéder pour lui.' Leur intercession est alors acceptée."</p>
+                           <footer className="text-islamic-green text-sm mt-2">— Ahmad, authentifié par Al-Albani</footer>
+                         </blockquote>
+                       </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -305,5 +347,3 @@ const Ramadan = () => {
 
 export default Ramadan;
 
-// Added Book icon at the top but missed importing it
-import { Book } from 'lucide-react';

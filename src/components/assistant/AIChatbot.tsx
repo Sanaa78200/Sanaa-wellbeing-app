@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Smartphone, X } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/components/ui/sonner';
 import { AIMessage } from '@/components/nutrition/types';
 import ChatWindow from './ChatWindow';
@@ -12,6 +13,7 @@ const AIChatbot = () => {
   const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { userData, addPoints } = useUser();
+  const { user } = useAuth();
   
   const {
     messages,
@@ -40,6 +42,11 @@ const AIChatbot = () => {
   const handleSendMessage = async () => {
     if (!message.trim()) {
       toast.error("Veuillez saisir votre question");
+      return;
+    }
+
+    if (!user) {
+      toast.error("Veuillez vous connecter pour utiliser le chat");
       return;
     }
 
