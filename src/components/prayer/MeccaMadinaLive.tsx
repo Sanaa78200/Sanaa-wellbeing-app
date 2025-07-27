@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,51 +6,40 @@ import { Play, Pause, Volume2, VolumeX, Maximize, Monitor, Smartphone } from 'lu
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/components/ui/sonner';
 import { MainAmazonBanner, SidebarAmazonProducts } from '@/components/ads/AmazonProducts';
-
 const MeccaMadinaLive = () => {
   const [currentMeccaSource, setCurrentMeccaSource] = useState(0);
   const [currentMadinaSource, setCurrentMadinaSource] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const isMobile = useIsMobile();
-  
+
   // Sources mises à jour avec les nouvelles URLs
-  const meccaSources = [
-    {
-      url: "https://www.youtube.com/embed/jY--Ad8r7bU?autoplay=1&mute=1&rel=0&modestbranding=1",
-      name: "Mecca Live HD - Source YouTube principale"
-    },
-    {
-      url: "https://www.youtube.com/embed/y4_c6NIl8XA?autoplay=1&mute=1&rel=0&modestbranding=1",
-      name: "Mecca Live - Source alternative"
-    },
-    {
-      url: "https://www.youtube.com/embed/XfIVFU77Z9w?autoplay=1&mute=1&rel=0&modestbranding=1",
-      name: "Mecca Live - Source de secours"
-    }
-  ];
-  
+  const meccaSources = [{
+    url: "https://www.youtube.com/embed/jY--Ad8r7bU?autoplay=1&mute=1&rel=0&modestbranding=1",
+    name: "Mecca Live HD - Source YouTube principale"
+  }, {
+    url: "https://www.youtube.com/embed/y4_c6NIl8XA?autoplay=1&mute=1&rel=0&modestbranding=1",
+    name: "Mecca Live - Source alternative"
+  }, {
+    url: "https://www.youtube.com/embed/XfIVFU77Z9w?autoplay=1&mute=1&rel=0&modestbranding=1",
+    name: "Mecca Live - Source de secours"
+  }];
+
   // Nouvelle source pour Médina mise à jour
-  const madinaSources = [
-    {
-      url: "https://www.youtube.com/embed/-jWCvRuC254?autoplay=1&mute=1&rel=0&modestbranding=1",
-      name: "Madina Live HD - Nouvelle source principale"
-    },
-    {
-      url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
-      name: "Madina Live - Source alternative"
-    },
-    {
-      url: "https://www.youtube.com/embed/2Yw3JGhzIpk?autoplay=1&mute=1&rel=0&modestbranding=1",
-      name: "Madina Live - Source de secours"
-    }
-  ];
-  
+  const madinaSources = [{
+    url: "https://www.youtube.com/embed/-jWCvRuC254?autoplay=1&mute=1&rel=0&modestbranding=1",
+    name: "Madina Live HD - Nouvelle source principale"
+  }, {
+    url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
+    name: "Madina Live - Source alternative"
+  }, {
+    url: "https://www.youtube.com/embed/2Yw3JGhzIpk?autoplay=1&mute=1&rel=0&modestbranding=1",
+    name: "Madina Live - Source de secours"
+  }];
   const toggleMute = () => {
     setIsMuted(!isMuted);
     toast.info(isMuted ? "Son activé" : "Son coupé");
   };
-  
   const changeSource = (type: 'mecca' | 'madina', sourceIndex: number) => {
     if (type === 'mecca') {
       setCurrentMeccaSource(sourceIndex);
@@ -61,14 +49,13 @@ const MeccaMadinaLive = () => {
       toast.success(`Source Madina changée : ${madinaSources[sourceIndex].name}`);
     }
   };
-  
   const toggleFullscreen = (element: string) => {
     const iframe = document.getElementById(element) as HTMLElement;
     if (iframe && iframe.requestFullscreen) {
       iframe.requestFullscreen();
     }
   };
-  
+
   // Optimisation mobile avec détection automatique
   useEffect(() => {
     if (isMobile) {
@@ -76,9 +63,7 @@ const MeccaMadinaLive = () => {
       toast.info("Mode mobile activé - Appuyez sur lecture pour démarrer");
     }
   }, [isMobile]);
-  
-  return (
-    <div className="min-h-screen bg-islamic-pattern py-6">
+  return <div className="min-h-screen bg-islamic-pattern py-6">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-islamic-green-dark mb-3">
@@ -117,35 +102,18 @@ const MeccaMadinaLive = () => {
                 <CardContent className="p-0">
                   <div className="relative">
                     <div className="aspect-video">
-                      <iframe
-                        id="mecca-iframe"
-                        src={`${meccaSources[currentMeccaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
-                        title="Mecca Live Stream"
-                        className="w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
+                      <iframe id="mecca-iframe" src={`${meccaSources[currentMeccaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`} title="Mecca Live Stream" className="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
                     </div>
                     
                     {/* Contrôles vidéo */}
                     <div className="p-4 bg-gray-50 border-t">
                       <div className="flex flex-wrap gap-2 mb-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={toggleMute}
-                          className="flex items-center gap-2"
-                        >
+                        <Button variant="outline" size="sm" onClick={toggleMute} className="flex items-center gap-2">
                           {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                           {isMuted ? 'Activer le son' : 'Couper le son'}
                         </Button>
                         
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleFullscreen('mecca-iframe')}
-                          className="flex items-center gap-2"
-                        >
+                        <Button variant="outline" size="sm" onClick={() => toggleFullscreen('mecca-iframe')} className="flex items-center gap-2">
                           <Maximize className="w-4 h-4" />
                           Plein écran
                         </Button>
@@ -155,17 +123,9 @@ const MeccaMadinaLive = () => {
                       <div className="space-y-2">
                         <p className="text-sm font-medium text-gray-600">Sources disponibles :</p>
                         <div className="flex flex-wrap gap-1">
-                          {meccaSources.map((source, index) => (
-                            <Button
-                              key={index}
-                              variant={currentMeccaSource === index ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => changeSource('mecca', index)}
-                              className="text-xs"
-                            >
+                          {meccaSources.map((source, index) => <Button key={index} variant={currentMeccaSource === index ? "default" : "outline"} size="sm" onClick={() => changeSource('mecca', index)} className="text-xs">
                               Source {index + 1}
-                            </Button>
-                          ))}
+                            </Button>)}
                         </div>
                       </div>
                     </div>
@@ -188,34 +148,18 @@ const MeccaMadinaLive = () => {
                 <CardContent className="p-0">
                   <div className="relative">
                     <div className="aspect-video">
-                      <iframe
-                        id="madina-iframe"
-                        src={`${madinaSources[currentMadinaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`}
-                        title="Madina Live Stream"
-                        className="w-full h-full"
-                        allowFullScreen
-                      />
+                      <iframe id="madina-iframe" src={`${madinaSources[currentMadinaSource].url}${isMuted ? '&mute=1' : '&mute=0'}`} title="Madina Live Stream" className="w-full h-full" allowFullScreen />
                     </div>
                     
                     {/* Contrôles vidéo */}
                     <div className="p-4 bg-gray-50 border-t">
                       <div className="flex flex-wrap gap-2 mb-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={toggleMute}
-                          className="flex items-center gap-2"
-                        >
+                        <Button variant="outline" size="sm" onClick={toggleMute} className="flex items-center gap-2">
                           {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                           {isMuted ? 'Activer le son' : 'Couper le son'}
                         </Button>
                         
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toggleFullscreen('madina-iframe')}
-                          className="flex items-center gap-2"
-                        >
+                        <Button variant="outline" size="sm" onClick={() => toggleFullscreen('madina-iframe')} className="flex items-center gap-2">
                           <Maximize className="w-4 h-4" />
                           Plein écran
                         </Button>
@@ -225,17 +169,9 @@ const MeccaMadinaLive = () => {
                       <div className="space-y-2">
                         <p className="text-sm font-medium text-gray-600">Sources disponibles :</p>
                         <div className="flex flex-wrap gap-1">
-                          {madinaSources.map((source, index) => (
-                            <Button
-                              key={index}
-                              variant={currentMadinaSource === index ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => changeSource('madina', index)}
-                              className="text-xs"
-                            >
+                          {madinaSources.map((source, index) => <Button key={index} variant={currentMadinaSource === index ? "default" : "outline"} size="sm" onClick={() => changeSource('madina', index)} className="text-xs">
                               Source {index + 1}
-                            </Button>
-                          ))}
+                            </Button>)}
                         </div>
                       </div>
                     </div>
@@ -245,22 +181,11 @@ const MeccaMadinaLive = () => {
             </div>
             
             {/* Zone produits Amazon pour desktop en bas */}
-            {!isMobile && (
-              <MainAmazonBanner />
-            )}
+            {!isMobile && <MainAmazonBanner />}
             
             {/* Informations complémentaires */}
             <div className="grid gap-4 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-islamic-green">📱 Optimisé Mobile</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">
-                    Cette interface s'adapte automatiquement à votre appareil pour une expérience optimale sur mobile et desktop.
-                  </p>
-                </CardContent>
-              </Card>
+              
               
               <Card>
                 <CardHeader>
@@ -282,14 +207,10 @@ const MeccaMadinaLive = () => {
         </div>
         
         {/* Zone produits Amazon pour mobile en bas de page */}
-        {isMobile && (
-          <div className="mt-8">
+        {isMobile && <div className="mt-8">
             <MainAmazonBanner />
-          </div>
-        )}
+          </div>}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default MeccaMadinaLive;

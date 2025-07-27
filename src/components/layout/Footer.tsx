@@ -1,17 +1,13 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-
 const Footer = () => {
-  return (
-    <footer className="bg-islamic-cream py-8 border-t border-islamic-green/10">
+  return <footer className="bg-islamic-cream py-8 border-t border-islamic-green/10">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-6 md:mb-0">
             <h3 className="text-islamic-green-dark font-bold text-lg mb-3">Sanaa Bien-être</h3>
-            <p className="text-islamic-slate max-w-md">
-              Application de santé et de bien-être pour femmes musulmanes basée sur les principes islamiques et la science nutritionnelle moderne.
-            </p>
+            <p className="text-islamic-slate max-w-md">Application de santé et de bien-être pour femmes musulmanes basée sur les principes islamiques 
+et la science nutritionnelle moderne.</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
@@ -45,12 +41,7 @@ const Footer = () => {
             
             <div className="md:col-span-1">
               <h4 className="font-semibold text-islamic-gold mb-3">🎁 Idées Cadeaux Islam</h4>
-              <a 
-                href="https://amzn.to/4lQea4B" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-islamic-slate hover:text-islamic-gold transition-colors text-sm"
-              >
+              <a href="https://amzn.to/4lQea4B" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-islamic-slate hover:text-islamic-gold transition-colors text-sm">
                 Découvrir nos cadeaux spirituels
                 <span className="ml-2">→</span>
               </a>
@@ -62,8 +53,6 @@ const Footer = () => {
           <p>&copy; {new Date().getFullYear()} Sanaa Bien-être. Tous droits réservés.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
