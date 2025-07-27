@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -17,8 +18,11 @@ serve(async (req) => {
     const groqKey = Deno.env.get('GROQ_KEY');
     
     if (!groqKey) {
+      console.error('GROQ_KEY not found in environment variables');
       throw new Error('Clé GROQ non configurée');
     }
+
+    console.log('GROQ_KEY found, proceeding with request');
 
     // Vérifier que l'utilisateur est authentifié
     const authHeader = req.headers.get('Authorization');
@@ -119,6 +123,8 @@ Intègre ces recommandations de produits de manière subtile et naturelle dans t
       { role: 'user', content: message }
     ];
 
+    console.log('Making request to GROQ API...');
+
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -136,10 +142,12 @@ Intègre ces recommandations de produits de manière subtile et naturelle dans t
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('GROQ API Error:', response.status, errorText);
       throw new Error(`Erreur API ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('GROQ API response received successfully');
     
     if (!data.choices?.[0]?.message?.content) {
       throw new Error('Réponse invalide de l\'API');

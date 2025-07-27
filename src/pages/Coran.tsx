@@ -5,7 +5,8 @@ import Footer from '@/components/layout/Footer';
 import QuranWidget from '@/components/quran/QuranWidget';
 import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Book, Clock, Calendar } from 'lucide-react';
+import { ArrowRight, Book, Clock, Calendar, ShoppingCart, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Coran = () => {
   return (
@@ -13,10 +14,33 @@ const Coran = () => {
       <Navbar />
       <main className="flex-grow bg-islamic-pattern">
         <div className="container mx-auto px-4 py-8">
-          {/* Bannière */}
+          {/* Bannière principale */}
           <div className="bg-islamic-green text-white p-6 rounded-lg mb-8 shadow-lg">
             <h1 className="text-2xl md:text-3xl font-bold mb-2">Le Noble Coran</h1>
             <p className="opacity-80">Écoutez le Noble Coran avec des fonctionnalités de récitation audio</p>
+          </div>
+
+          {/* Bannière d'achat Coran */}
+          <div className="bg-gradient-to-r from-islamic-gold to-islamic-gold-dark text-white p-4 rounded-lg mb-8 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Book className="h-8 w-8" />
+                <div>
+                  <h2 className="text-xl font-bold">Achetez votre Coran</h2>
+                  <p className="text-sm opacity-90">Livraison en moins de 2 jours</p>
+                </div>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-white text-islamic-gold hover:bg-islamic-cream border-white"
+                onClick={() => window.open('https://amzn.to/46uPNoi', '_blank')}
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                Commander maintenant
+                <ExternalLink className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
           </div>
 
           {/* Principal */}
