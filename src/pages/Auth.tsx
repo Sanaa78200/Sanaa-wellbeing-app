@@ -12,7 +12,7 @@ import { ExternalLink, Book, Heart, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Auth = () => {
-  const { user, signIn, signUp } = useAuth();
+  const { user, signIn, signUp, resetPassword } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
@@ -61,9 +61,14 @@ const Auth = () => {
     setResetLoading(true);
     
     try {
-      const { error } = await signIn(resetEmail, ''); // This will be handled by supabase reset
-      toast.success('Email de réinitialisation envoyé !');
-      setResetEmail('');
+      const { error } = await resetPassword(resetEmail);
+      
+      if (error) {
+        toast.error(error.message || 'Erreur lors de l\'envoi de l\'email');
+      } else {
+        toast.success('Email de réinitialisation envoyé ! Vérifiez votre boîte mail.');
+        setResetEmail('');
+      }
     } catch (error) {
       toast.error('Erreur lors de l\'envoi de l\'email');
     }
