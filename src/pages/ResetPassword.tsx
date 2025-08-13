@@ -26,6 +26,13 @@ const ResetPassword = () => {
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken
+      }).then(({ error }) => {
+        if (error) {
+          console.error('Erreur lors de la définition de la session:', error);
+          toast.error('Lien de réinitialisation invalide ou expiré');
+        } else {
+          console.log('Session définie avec succès');
+        }
       });
     }
   }, [accessToken, refreshToken]);
