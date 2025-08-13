@@ -15,10 +15,10 @@ const RGPD = () => {
               <Shield className="h-16 w-16 text-islamic-green" />
             </div>
             <h1 className="text-3xl font-bold text-islamic-green-dark mb-3">
-              Politique de Confidentialité et RGPD
+              Politique de Confidentialité, RGPD et Conditions d'Utilisation
             </h1>
             <p className="text-islamic-slate max-w-2xl mx-auto">
-              Nous nous engageons à protéger vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD).
+              Nous nous engageons à protéger vos données personnelles conformément au RGPD. En utilisant notre application, vous acceptez nos conditions d'utilisation et autorisez le traitement de vos données selon les modalités décrites ci-dessous.
             </p>
           </div>
 
@@ -94,24 +94,29 @@ const RGPD = () => {
               </CardContent>
             </Card>
 
-            {/* Cookies */}
+            {/* Cookies et Technologies */}
             <Card className="islamic-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Cookie className="h-5 w-5 text-islamic-green" />
-                  Cookies et Stockage Local
+                  Cookies, Stockage Local et Technologies Utilisées
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p>Nous utilisons :</p>
+                <p>Notre application utilise :</p>
                 <ul className="list-disc list-inside space-y-2 text-sm">
-                  <li>Cookies essentiels pour le fonctionnement de l'application</li>
-                  <li>Stockage local pour sauvegarder vos préférences</li>
-                  <li>Cookies d'analyse pour améliorer nos services</li>
+                  <li><strong>Cookies essentiels</strong> : Pour le fonctionnement de l'application</li>
+                  <li><strong>Stockage local (localStorage)</strong> : Les cookies et données sont conservés localement sur votre appareil par l'utilisateur</li>
+                  <li><strong>Intelligence Artificielle</strong> : Notre IA intégrée utilise la technologie <a href="https://groq.com/" target="_blank" className="text-islamic-green underline">Groq</a> pour les fonctionnalités de chat</li>
+                  <li><strong>Hébergement</strong> : Le site est hébergé par <a href="https://vercel.com/" target="_blank" className="text-islamic-green underline">Vercel</a> aux États-Unis</li>
+                  <li><strong>Base de données</strong> : Vos informations sont stockées sur les serveurs <a href="https://supabase.com/" target="_blank" className="text-islamic-green underline">Supabase</a></li>
                 </ul>
-                <p className="text-sm text-islamic-slate">
-                  Vous pouvez gérer vos préférences de cookies dans les paramètres de votre navigateur.
-                </p>
+                <div className="bg-islamic-cream p-4 rounded-lg">
+                  <p className="text-sm font-semibold text-islamic-green-dark mb-2">Consentement et Autorisation :</p>
+                  <p className="text-sm text-islamic-slate">
+                    En vous inscrivant et en utilisant notre application, vous prenez conscience que vos informations sont conservées avec votre consentement sur les serveurs Supabase et vous nous autorisez à utiliser notre application selon ces conditions.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -161,9 +166,33 @@ const RGPD = () => {
               </CardContent>
             </Card>
 
+            {/* Conditions d'utilisation et acceptation */}
+            <Card className="islamic-card border-islamic-green">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-islamic-green">
+                  <Shield className="h-5 w-5" />
+                  Conditions d'Utilisation et Acceptation
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="font-semibold">En utilisant l'application Sanaa Bien-être, vous acceptez :</p>
+                <ul className="list-disc list-inside space-y-2 text-sm">
+                  <li>Le traitement de vos données personnelles selon cette politique</li>
+                  <li>Le stockage de vos informations sur les serveurs Supabase</li>
+                  <li>L'utilisation de technologies tierces (Groq, Vercel) pour le fonctionnement du service</li>
+                  <li>La conservation locale des cookies et préférences sur votre appareil</li>
+                  <li>Nos conditions générales d'utilisation</li>
+                </ul>
+                <div className="bg-islamic-green/10 p-4 rounded-lg">
+                  <p className="text-sm font-semibold">Droit de retrait :</p>
+                  <p className="text-sm">Vous pouvez retirer votre consentement à tout moment en supprimant votre compte ou en nous contactant.</p>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Mise à jour */}
             <div className="text-center text-sm text-islamic-slate bg-islamic-cream p-4 rounded-lg">
-              <p>Cette politique de confidentialité a été mise à jour le : <strong>26 Juillet 2025</strong></p>
+              <p>Cette politique de confidentialité et conditions d'utilisation ont été mises à jour le : <strong>13 Août 2025</strong></p>
               <p className="mt-2">Nous vous informerons de toute modification importante de cette politique.</p>
             </div>
           </div>

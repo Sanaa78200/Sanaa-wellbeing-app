@@ -25,10 +25,10 @@ const MeccaMadinaLive = () => {
     name: "Mecca Live - Source de secours"
   }];
 
-  // Nouvelle source pour Médina mise à jour
+  // Source Médina mise à jour avec le nouveau lien
   const madinaSources = [{
     url: "https://www.youtube.com/embed/TpT8b8JFZ6E?autoplay=1&mute=1&rel=0&modestbranding=1",
-    name: "Madina Live Direct - Source principale"
+    name: "Madina Live Direct - Source principale (mise à jour)"
   }, {
     url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
     name: "Madina Live - Source alternative"

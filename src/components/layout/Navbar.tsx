@@ -145,6 +145,33 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
+          
+          {/* Boutons de connexion mobile */}
+          <div className="mt-4 flex justify-center">
+            {user ? (
+              <Button 
+                onClick={() => {
+                  signOut();
+                  setIsMenuOpen(false);
+                }}
+                variant="ghost" 
+                size="sm"
+                className="text-islamic-green hover:bg-islamic-green/10"
+              >
+                Déconnexion
+              </Button>
+            ) : (
+              <Button 
+                asChild 
+                variant="outline" 
+                size="sm"
+                className="border-islamic-green text-islamic-green hover:bg-islamic-green hover:text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Link to="/auth">Connexion</Link>
+              </Button>
+            )}
+          </div>
           </div>
         </div>
       </nav>
