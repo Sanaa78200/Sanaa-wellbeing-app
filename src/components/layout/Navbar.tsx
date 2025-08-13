@@ -21,11 +21,6 @@ const Navbar = () => {
   // Navigation cohérente et organisée
   const navItems = [
     {
-      name: 'Nouveau mot de passe',
-      path: '/reset-password',
-      category: 'auth'
-    },
-    {
       name: t('home'),
       path: '/',
       category: 'main'
