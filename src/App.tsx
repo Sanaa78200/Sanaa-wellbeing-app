@@ -18,6 +18,7 @@ import Profil from "./pages/Profil";
 import MeccaMadina from "./pages/MeccaMadina";
 import RGPD from "./pages/RGPD";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import SEOKeywords from "./pages/SEOKeywords";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/prieres" element={<Prieres />} />
               <Route path="/nutrition-regime" element={<NutritionRegime />} />
               {/* Redirects for old routes */}
