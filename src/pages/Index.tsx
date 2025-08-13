@@ -55,7 +55,7 @@ const Index = () => {
               <Card className="w-full max-w-3xl overflow-hidden">
                 <CardContent className="p-0">
                   <iframe 
-                    src="https://www.youtube.com/embed/y4_c6NIl8XA?mute=1" 
+                    src="https://www.youtube.com/embed/TpT8b8JFZ6E?mute=1" 
                     title="Mecca Live" 
                     width="100%" 
                     height="315" 
