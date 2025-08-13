@@ -13,6 +13,7 @@ const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -32,22 +33,40 @@ const ResetPassword = () => {
       }).then(({ data, error }) => {
         if (error) {
           console.error('Erreur session:', error);
-          toast.error('Lien expiré mais vous pouvez quand même changer votre mot de passe');
+          toast.error('Erreur de session. Redirection vers la demande de lien...');
+          // Rediriger vers la page d'authentification avec un message
+          setTimeout(() => navigate('/auth'), 2000);
         } else {
-          console.log('Session configurée:', data);
-          toast.success('Vous pouvez maintenant changer votre mot de passe');
+          console.log('Session configurée avec succès:', data);
+          setSessionReady(true);
+          toast.success('Session active - vous pouvez changer votre mot de passe');
         }
       });
     } else if (type === 'recovery') {
-      toast.error('Lien invalide, mais vous pouvez changer votre mot de passe');
+      toast.error('Tokens manquants. Demandez un nouveau lien de réinitialisation');
+      setTimeout(() => navigate('/auth'), 3000);
     } else {
-      // Cas où on arrive directement sans lien
-      toast.info('Saisissez votre nouveau mot de passe');
+      // Si on arrive sans paramètres de recovery, vérifier si on a une session active
+      supabase.auth.getSession().then(({ data: { session }, error }) => {
+        if (session && !error) {
+          console.log('Session existante trouvée:', session);
+          setSessionReady(true);
+          toast.info('Session active - vous pouvez changer votre mot de passe');
+        } else {
+          toast.error('Aucune session active. Redirection vers la connexion...');
+          setTimeout(() => navigate('/auth'), 2000);
+        }
+      });
     }
-  }, [accessToken, refreshToken, type]);
+  }, [accessToken, refreshToken, type, navigate]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!sessionReady) {
+      toast.error('Session non prête. Veuillez patienter ou redemander un lien de réinitialisation.');
+      return;
+    }
     
     if (password !== confirmPassword) {
       toast.error('Les mots de passe ne correspondent pas');
@@ -67,13 +86,27 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
+      // Vérifier la session avant la mise à jour
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error('Session expirée. Veuillez demander un nouveau lien de réinitialisation.');
+        setTimeout(() => navigate('/auth'), 2000);
+        return;
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: password
       });
 
       if (error) {
         console.error('Erreur mise à jour:', error);
-        toast.error(error.message || 'Erreur lors de la mise à jour du mot de passe');
+        if (error.message.includes('session')) {
+          toast.error('Session expirée. Demandez un nouveau lien de réinitialisation.');
+          setTimeout(() => navigate('/auth'), 2000);
+        } else {
+          toast.error(error.message || 'Erreur lors de la mise à jour du mot de passe');
+        }
       } else {
         toast.success('Mot de passe mis à jour avec succès !');
         setTimeout(() => navigate('/'), 2000);
