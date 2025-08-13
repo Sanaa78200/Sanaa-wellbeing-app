@@ -21,19 +21,26 @@ const ResetPassword = () => {
   const refreshToken = searchParams.get('refresh_token');
 
   useEffect(() => {
+    console.log('Tokens reçus:', { accessToken: !!accessToken, refreshToken: !!refreshToken });
+    
     // Si nous avons les tokens, les définir dans la session
     if (accessToken && refreshToken) {
+      console.log('Tentative de définition de la session...');
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken
-      }).then(({ error }) => {
+      }).then(({ data, error }) => {
         if (error) {
           console.error('Erreur lors de la définition de la session:', error);
-          toast.error('Lien de réinitialisation invalide ou expiré');
+          toast.error('Lien de réinitialisation invalide ou expiré. Veuillez demander un nouveau lien.');
         } else {
-          console.log('Session définie avec succès');
+          console.log('Session définie avec succès:', data);
+          toast.success('Vous pouvez maintenant définir votre nouveau mot de passe');
         }
       });
+    } else {
+      console.log('Aucun token trouvé dans l\'URL');
+      toast.error('Lien de réinitialisation manquant. Veuillez cliquer sur le lien reçu par email.');
     }
   }, [accessToken, refreshToken]);
 
