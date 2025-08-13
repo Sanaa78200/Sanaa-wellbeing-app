@@ -15,8 +15,8 @@ const MeccaMadinaLive = () => {
 
   // Sources mises à jour avec les nouvelles URLs
   const meccaSources = [{
-    url: "https://www.youtube.com/embed/jY--Ad8r7bU?autoplay=1&mute=1&rel=0&modestbranding=1",
-    name: "Mecca Live HD - Source YouTube principale"
+    url: "https://www.youtube.com/embed/9YNr0G4EE0Q?autoplay=1&mute=1&rel=0&modestbranding=1",
+    name: "Mecca Live Direct - Source principale"
   }, {
     url: "https://www.youtube.com/embed/y4_c6NIl8XA?autoplay=1&mute=1&rel=0&modestbranding=1",
     name: "Mecca Live - Source alternative"
@@ -27,8 +27,8 @@ const MeccaMadinaLive = () => {
 
   // Nouvelle source pour Médina mise à jour
   const madinaSources = [{
-    url: "https://www.youtube.com/embed/-jWCvRuC254?autoplay=1&mute=1&rel=0&modestbranding=1",
-    name: "Madina Live HD - Nouvelle source principale"
+    url: "https://www.youtube.com/embed/TpT8b8JFZ6E?autoplay=1&mute=1&rel=0&modestbranding=1",
+    name: "Madina Live Direct - Source principale"
   }, {
     url: "https://www.youtube.com/embed/R-4O5R7Ld0Y?autoplay=1&mute=1&rel=0&modestbranding=1",
     name: "Madina Live - Source alternative"
