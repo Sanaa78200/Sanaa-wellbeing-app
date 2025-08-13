@@ -15,7 +15,7 @@ serve(async (req) => {
 
   try {
     const { message, conversationHistory, userData } = await req.json();
-    const groqKey = Deno.env.get('GROQ_KEY');
+    const groqKey = Deno.env.get('GROQ-KEY2');
     
     if (!groqKey) {
       console.error('GROQ_KEY not found in environment variables');
