@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { useUser } from '@/context/UserContext';
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import RegimeNavigation from './RegimeNavigation';
@@ -8,33 +7,24 @@ import DashboardTab from './tabs/DashboardTab';
 import ProgressTab from './tabs/ProgressTab';
 import CalendarTab from './tabs/CalendarTab';
 import ObjectivesTab from './tabs/ObjectivesTab';
-import { getMockCaloriesData, getMockWeightData, formatObjectiveText } from './RegimeData';
+import { useRegimeData } from '@/hooks/useRegimeData';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useGamificationData } from '@/hooks/useGamificationData';
 
 const RegimeTracker = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const { userData, updateChallenge, completeChallenge } = useUser();
   const isMobile = useIsMobile();
   
-  // Utilisation du nom de l'utilisateur du contexte
+  // Hooks pour les données
+  const { userData } = useUserProfile();
+  const { progressData, weightHistory, caloriesHistory, formatObjectiveText } = useRegimeData();
+  const { gamificationData, updateChallenge, completeChallenge } = useGamificationData();
+  
+  // Utilisation du nom de l'utilisateur
   const userName = userData.name || 'Utilisateur';
   const userGoal = userData.goal === 'lose' ? 'Perdre du poids' : 
                   userData.goal === 'gain' ? 'Prendre du poids' : 'Maintenir le poids';
   
-  // Données pour les graphiques
-  const weightData = getMockWeightData();
-  const caloriesData = getMockCaloriesData();
-  
-  // Données de progression
-  const progressData = {
-    poidsInitial: typeof userData.weight === 'string' ? parseFloat(userData.weight) : userData.weight || 78.2,
-    poidsActuel: 74.5,
-    poidsCible: userData.goal === 'lose' ? 70.0 : userData.goal === 'gain' ? 85.0 : 
-                typeof userData.weight === 'string' ? parseFloat(userData.weight) : userData.weight || 75.0,
-    joursSuivis: userData.gamification?.streak || 15,
-    moyenneCalories: 1694,
-    perteGraisse: 2.1,
-  };
-
   // Calcul de l'objectif pour l'affichage
   const objectifTexte = formatObjectiveText(userData.goal);
 
@@ -64,11 +54,11 @@ const RegimeTracker = () => {
       <main className="p-4">
         {activeTab === 'dashboard' && (
           <DashboardTab 
-            weightData={weightData}
-            caloriesData={caloriesData}
+            weightData={weightHistory}
+            caloriesData={caloriesHistory}
             progressData={progressData}
             objectifTexte={objectifTexte}
-            challenges={userData.gamification?.challenges}
+            challenges={gamificationData.challenges}
             onCompleteChallenge={handleCompleteChallenge}
             onUpdateChallenge={handleUpdateChallenge}
             isMobile={isMobile}

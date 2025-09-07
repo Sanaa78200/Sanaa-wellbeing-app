@@ -7,6 +7,7 @@ import MealList from './MealList';
 import { Meal, UserData, DailyGoal } from './types';
 import { useNutritionData } from '@/hooks/useNutritionData';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useGamificationData } from '@/hooks/useGamificationData';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/components/ui/sonner';
 
@@ -21,7 +22,8 @@ const DietApp = () => {
   
   const { user } = useAuth();
   const { meals, dailyGoals, addMeal: addMealToSupabase, deleteMeal: deleteMealFromSupabase, calculateTotals } = useNutritionData();
-  const { userData, updateUserData, addPoints, awardBadge } = useUserProfile();
+  const { userData, updateUserData } = useUserProfile();
+  const { addPoints, awardBadge } = useGamificationData();
 
 
   // Calculer les objectifs basés sur les données utilisateur

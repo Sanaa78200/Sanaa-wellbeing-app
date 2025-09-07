@@ -3,7 +3,7 @@ import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { useUser } from '@/context/UserContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import DietApp from '@/components/nutrition/DietApp';
 import RegimeTracker from '@/components/regime/RegimeTracker';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -14,7 +14,7 @@ import MobileHealthSummary from '@/components/nutrition/MobileHealthSummary';
 import MadinahLiveView from '@/components/nutrition/MadinahLiveView';
 
 const NutritionRegime = () => {
-  const { userData } = useUser();
+  const { userData } = useUserProfile();
   const isMobile = useIsMobile();
   
   return (

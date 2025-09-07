@@ -1,18 +1,18 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useUser } from '@/context/UserContext';
 import { toast } from '@/components/ui/sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useActivityData } from './hooks/useActivityData';
+import { useActivityData } from '@/hooks/useActivityData';
+import { useGamificationData } from '@/hooks/useGamificationData';
 import ActivityMetrics from './ActivityMetrics';
 import ActivityChart from './ActivityChart';
 import ConnectDevicePrompt from './ConnectDevicePrompt';
 
 const ActivityTracker = () => {
-  const { userData, addPoints, completeChallenge, updateChallenge, updateUserData } = useUser();
   const isMobile = useIsMobile();
   const { isConnected, activityData, weeklyData, connectHealthAPI } = useActivityData();
+  const { addPoints, updateChallenge } = useGamificationData();
   
   // Connecter l'API de santé avec des récompenses
   const handleConnectHealthAPI = () => {
@@ -25,13 +25,8 @@ const ActivityTracker = () => {
       description: "Vos données d'activité sont maintenant synchronisées automatiquement."
     });
     
-    // Mettre à jour le défi quotidien
-    if (userData.gamification) {
-      const stepsChallenge = userData.gamification.challenges.find(c => c.id === 'daily-steps');
-      if (stepsChallenge) {
-        updateChallenge('daily-steps', activityData.steps / 100); // Conversion pour la progression
-      }
-    }
+    // Mettre à jour le défi quotidien des pas
+    updateChallenge('daily-steps', activityData.steps / 100); // Conversion pour la progression
   };
   
   return (

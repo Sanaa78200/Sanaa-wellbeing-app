@@ -7,13 +7,94 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
+      activity_data: {
+        Row: {
+          calories: number | null
+          created_at: string
+          date: string
+          distance: number | null
+          id: string
+          is_connected: boolean | null
+          steps: number | null
+          updated_at: string
+          user_id: string
+          weekly_steps: Json | null
+        }
+        Insert: {
+          calories?: number | null
+          created_at?: string
+          date?: string
+          distance?: number | null
+          id?: string
+          is_connected?: boolean | null
+          steps?: number | null
+          updated_at?: string
+          user_id: string
+          weekly_steps?: Json | null
+        }
+        Update: {
+          calories?: number | null
+          created_at?: string
+          date?: string
+          distance?: number | null
+          id?: string
+          is_connected?: boolean | null
+          steps?: number | null
+          updated_at?: string
+          user_id?: string
+          weekly_steps?: Json | null
+        }
+        Relationships: []
+      }
+      gamification_data: {
+        Row: {
+          achievements: Json | null
+          badges: Json | null
+          challenges: Json | null
+          created_at: string
+          id: string
+          last_active_date: string | null
+          level: number | null
+          points: number | null
+          streak: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achievements?: Json | null
+          badges?: Json | null
+          challenges?: Json | null
+          created_at?: string
+          id?: string
+          last_active_date?: string | null
+          level?: number | null
+          points?: number | null
+          streak?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achievements?: Json | null
+          badges?: Json | null
+          challenges?: Json | null
+          created_at?: string
+          id?: string
+          last_active_date?: string | null
+          level?: number | null
+          points?: number | null
+          streak?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       nutrition_data: {
         Row: {
           created_at: string
@@ -95,6 +176,54 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weight?: number | null
+        }
+        Relationships: []
+      }
+      regime_data: {
+        Row: {
+          calories_history: Json | null
+          created_at: string
+          date: string
+          id: string
+          jours_suivis: number | null
+          moyenne_calories: number | null
+          perte_graisse: number | null
+          poids_actuel: number | null
+          poids_cible: number | null
+          poids_initial: number | null
+          updated_at: string
+          user_id: string
+          weight_history: Json | null
+        }
+        Insert: {
+          calories_history?: Json | null
+          created_at?: string
+          date?: string
+          id?: string
+          jours_suivis?: number | null
+          moyenne_calories?: number | null
+          perte_graisse?: number | null
+          poids_actuel?: number | null
+          poids_cible?: number | null
+          poids_initial?: number | null
+          updated_at?: string
+          user_id: string
+          weight_history?: Json | null
+        }
+        Update: {
+          calories_history?: Json | null
+          created_at?: string
+          date?: string
+          id?: string
+          jours_suivis?: number | null
+          moyenne_calories?: number | null
+          perte_graisse?: number | null
+          poids_actuel?: number | null
+          poids_cible?: number | null
+          poids_initial?: number | null
+          updated_at?: string
+          user_id?: string
+          weight_history?: Json | null
         }
         Relationships: []
       }
