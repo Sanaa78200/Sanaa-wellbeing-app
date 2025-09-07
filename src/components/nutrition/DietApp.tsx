@@ -4,13 +4,13 @@ import UserProfile from './UserProfile';
 import NutritionStats from './NutritionStats';
 import AddMealForm from './AddMealForm';
 import MealList from './MealList';
-import NutritionSync from './NutritionSync';
 import { Meal, UserData, DailyGoal } from './types';
-import { useUser } from '@/context/UserContext';
+import { useNutritionData } from '@/hooks/useNutritionData';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/components/ui/sonner';
 
 const DietApp = () => {
-  const [meals, setMeals] = useState<Meal[]>([]);
   const [newMeal, setNewMeal] = useState<Meal>({
     name: '',
     calories: '',
@@ -18,26 +18,11 @@ const DietApp = () => {
     carbs: '',
     fat: ''
   });
-  const [dailyGoal, setDailyGoal] = useState<DailyGoal>({
-    calories: 2000,
-    protein: 100,
-    carbs: 250,
-    fat: 65
-  });
   
-  const { userData, updateUserData, addPoints, awardBadge, updateChallenge } = useUser();
+  const { user } = useAuth();
+  const { meals, dailyGoals, addMeal: addMealToSupabase, deleteMeal: deleteMealFromSupabase, calculateTotals } = useNutritionData();
+  const { userData, updateUserData, addPoints, awardBadge } = useUserProfile();
 
-  // Calculer les totaux nutritionnels
-  const calculateTotals = () => {
-    return meals.reduce((acc, meal) => {
-      return {
-        calories: acc.calories + Number(meal.calories),
-        protein: acc.protein + Number(meal.protein),
-        carbs: acc.carbs + Number(meal.carbs),
-        fat: acc.fat + Number(meal.fat)
-      };
-    }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
-  };
 
   // Calculer les objectifs basés sur les données utilisateur
   const calculateGoals = () => {
@@ -66,12 +51,7 @@ const DietApp = () => {
         break;
     }
 
-    setDailyGoal({
-      calories: Math.round(calorieGoal),
-      protein: Math.round(Number(userData.weight) * 1.6), // 1.6g de protéines par kg de poids
-      carbs: Math.round(calorieGoal * 0.5 / 4), // 50% des calories en glucides (4cal/g)
-      fat: Math.round(calorieGoal * 0.3 / 9) // 30% des calories en lipides (9cal/g)
-    });
+    // Les objectifs sont maintenant gérés par useNutritionData
   };
 
   // Gérer le changement des champs du formulaire pour un nouveau repas
@@ -102,10 +82,16 @@ const DietApp = () => {
   };
 
   // Ajouter un nouveau repas
-  const addMeal = (e: React.FormEvent) => {
+  const handleAddMeal = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedMeals = [...meals, newMeal];
-    setMeals(updatedMeals);
+    
+    if (!user) {
+      toast.error('Vous devez être connecté pour ajouter un repas');
+      return;
+    }
+
+    await addMealToSupabase(newMeal);
+    
     setNewMeal({
       name: '',
       calories: '',
@@ -121,24 +107,11 @@ const DietApp = () => {
     if (meals.length === 0) {
       awardBadge('first-meal');
     }
-    
-    // Mettre à jour le défi de protéines
-    const totals = calculateTotals();
-    const newProtein = Number(newMeal.protein);
-    if (totals.protein + newProtein >= dailyGoal.protein) {
-      updateChallenge('daily-protein', 1);
-    }
-    
-    toast.success('Repas ajouté !', {
-      description: 'Votre repas a été ajouté avec succès. +10 points !'
-    });
   };
 
   // Supprimer un repas
-  const deleteMeal = (index: number) => {
-    const updatedMeals = [...meals];
-    updatedMeals.splice(index, 1);
-    setMeals(updatedMeals);
+  const handleDeleteMeal = async (index: number) => {
+    await deleteMealFromSupabase(index);
   };
 
   // Recalculer les objectifs quand les données utilisateur changent
@@ -147,21 +120,33 @@ const DietApp = () => {
   }, [userData]);
 
   // Calculer les totaux pour l'affichage
-  const totals = calculateTotals();
+  const totals = calculateTotals(meals);
   
   // Calculer les pourcentages de progression
   const progress = {
-    calories: Math.min(100, (totals.calories / dailyGoal.calories) * 100),
-    protein: Math.min(100, (totals.protein / dailyGoal.protein) * 100),
-    carbs: Math.min(100, (totals.carbs / dailyGoal.carbs) * 100),
-    fat: Math.min(100, (totals.fat / dailyGoal.fat) * 100)
+    calories: Math.min(100, (totals.calories / dailyGoals.calories) * 100),
+    protein: Math.min(100, (totals.protein / dailyGoals.protein) * 100),
+    carbs: Math.min(100, (totals.carbs / dailyGoals.carbs) * 100),
+    fat: Math.min(100, (totals.fat / dailyGoals.fat) * 100)
   };
+
+  if (!user) {
+    return (
+      <div className="islamic-border p-6 max-w-5xl mx-auto text-center">
+        <h1 className="text-3xl font-bold text-islamic-green-dark mb-4">Mon Suivi Nutritionnel</h1>
+        <p className="text-lg text-islamic-slate mb-6">
+          Veuillez vous connecter pour accéder à votre suivi nutritionnel personnalisé.
+        </p>
+        <a href="/auth" className="inline-block px-6 py-3 bg-islamic-green text-white rounded-lg hover:bg-islamic-green-dark transition-colors">
+          Se connecter
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="islamic-border p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold text-islamic-green-dark mb-8 text-center">Mon Suivi Nutritionnel</h1>
-      
-      <NutritionSync meals={meals} onMealsUpdate={setMeals} />
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <UserProfile 
@@ -172,7 +157,7 @@ const DietApp = () => {
         
         <NutritionStats 
           totals={totals} 
-          dailyGoal={dailyGoal} 
+          dailyGoal={dailyGoals} 
           progress={progress} 
         />
       </div>
@@ -180,12 +165,12 @@ const DietApp = () => {
       <AddMealForm 
         newMeal={newMeal} 
         onMealChange={handleMealChange} 
-        onAddMeal={addMeal} 
+        onAddMeal={handleAddMeal} 
       />
       
       <MealList 
         meals={meals} 
-        onDeleteMeal={deleteMeal} 
+        onDeleteMeal={handleDeleteMeal} 
       />
     </div>
   );
